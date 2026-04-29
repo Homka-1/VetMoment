@@ -19,7 +19,7 @@
 
         <div>
             <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Номер телефона</label>
-            <input type="text" name="phone" id="phone" value="{{ old('phone', $user->phone) }}" required class="w-full rounded-xl border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 px-4 py-2.5 border bg-gray-50">
+            <input type="tel" name="phone" id="phone" value="{{ old('phone', $user->phone) }}" required inputmode="tel" autocomplete="tel" placeholder="+7 (777) 123-45-67" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 px-4 py-2.5 border bg-gray-50">
             <p class="text-xs text-gray-500 mt-1">Телефон будет показан только тому пользователю, чью заявку вы примете, или тому, кто примет вашу.</p>
             @error('phone') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
         </div>
