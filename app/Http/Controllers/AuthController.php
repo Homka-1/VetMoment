@@ -21,11 +21,27 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        $request->validate([
-            'login' => 'required|string|max:255|unique:users',
-            'phone' => 'required|string|max:20|unique:users',
-            'password' => 'required|string|min:4',
+        $request->merge([
+            'phone' => $this->normalizePhone($request->input('phone')),
         ]);
+
+        $request->validate(
+            [
+                'login' => 'required|string|max:255|unique:users,login',
+                'phone' => [
+                    'required',
+                    'string',
+                    'max:16',
+                    'regex:/^\+[1-9]\d{9,14}$/',
+                    'unique:users,phone',
+                ],
+                'password' => 'required|string|min:4',
+            ],
+            [
+                'phone.regex' => 'Введите номер телефона в международном формате. Пример: +79991234567',
+                'phone.unique' => 'Пользователь с таким номером телефона уже зарегистрирован.',
+            ]
+        );
 
         $user = User::create([
             'login' => $request->login,
@@ -36,6 +52,31 @@ class AuthController extends Controller
         Auth::login($user);
 
         return redirect()->route('home');
+    }
+
+    private function normalizePhone(?string $value): string
+    {
+        $value = trim((string) $value);
+
+        if ($value === '') {
+            return '';
+        }
+
+        $digits = preg_replace('/\D+/', '', $value) ?? '';
+
+        if ($digits === '') {
+            return '';
+        }
+
+        // РФ/КЗ часто вводят: 8XXXXXXXXXX или 9XXXXXXXXX (без кода страны)
+        if (strlen($digits) === 11 && $digits[0] === '8') {
+            $digits = '7' . substr($digits, 1);
+        } elseif (strlen($digits) === 10) {
+            $digits = '7' . $digits;
+        }
+
+        // Приводим к E.164: + и 10-15 цифр (первая цифра не 0)
+        return '+' . ltrim($digits, '+');
     }
 
     public function login(Request $request)

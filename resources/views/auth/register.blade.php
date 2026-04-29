@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="max-w-md mx-auto mt-12 bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+<div class="max-w-md mx-auto mt-8 sm:mt-12 bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8">
     <div class="text-center mb-8">
         <h2 class="text-2xl font-bold text-gray-900">Присоединяйтесь!</h2>
         <p class="text-gray-500 mt-2 text-sm">Станьте частью зооволонтёрского сообщества</p>
@@ -17,7 +17,7 @@
 
         <div>
             <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Номер телефона</label>
-            <input type="text" name="phone" id="phone" value="{{ old('phone') }}" required placeholder="+7 (777) 123-45-67" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 px-4 py-2.5 border bg-gray-50">
+            <input type="tel" name="phone" id="phone" value="{{ old('phone') }}" required inputmode="tel" autocomplete="tel" placeholder="+7 (777) 123-45-67" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 px-4 py-2.5 border bg-gray-50">
             @error('phone') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
         </div>
 

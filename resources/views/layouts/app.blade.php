@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ВетМомент - Срочная помощь животным</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body {
@@ -16,14 +16,14 @@
 <body class="antialiased text-gray-800">
     <nav class="bg-white shadow-sm border-b border-gray-100">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
+            <div class="flex items-center justify-between py-3 sm:h-16 sm:py-0 gap-4">
                 <div class="flex items-center">
                     <a href="{{ route('home') }}" class="flex items-center gap-2">
                         <svg class="w-8 h-8 text-emerald-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
                         <span class="text-xl font-bold text-gray-900 tracking-tight">ВетМомент</span>
                     </a>
                 </div>
-                <div class="flex items-center space-x-4">
+                <div class="flex items-center gap-3 sm:gap-4 shrink-0">
                     @auth
                         @php
                             $unreadCount = auth()->user()->unreadNotifications->count();
@@ -36,7 +36,10 @@
                             @endif
                         </a>
 
-                        <a href="{{ route('profile.edit') }}" class="text-sm font-medium text-gray-600 hover:text-emerald-600 transition-colors">{{ auth()->user()->login }}</a>
+                        <a href="{{ route('profile.edit') }}" class="text-gray-600 hover:text-emerald-600 transition-colors flex items-center gap-2">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                            <span class="hidden sm:inline text-sm font-medium">{{ auth()->user()->login }}</span>
+                        </a>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit" class="text-sm font-medium text-gray-500 hover:text-red-500 transition-colors">
@@ -45,7 +48,7 @@
                         </form>
                     @else
                         <a href="{{ route('login') }}" class="text-sm font-medium text-gray-600 hover:text-emerald-600 transition-colors">Войти</a>
-                        <a href="{{ route('register') }}" class="text-sm font-medium bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-full shadow-sm transition-colors">Регистрация</a>
+                        <a href="{{ route('register') }}" class="text-sm font-medium bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-full shadow-sm transition-colors">Регистрация</a>
                     @endauth
                 </div>
             </div>
