@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="max-w-md mx-auto mt-8 sm:mt-12 bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8">
+<div class="max-w-md mx-auto mt-12 bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
     <div class="text-center mb-8">
         <h2 class="text-2xl font-bold text-gray-900">С возвращением!</h2>
         <p class="text-gray-500 mt-2 text-sm">Войдите, чтобы помогать животным</p>
