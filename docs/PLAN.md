@@ -31,6 +31,41 @@
 
 ---
 
+## Сквозное требование: простой запуск на Windows
+
+Итоговый проект должен запускаться на обычном компьютере с Windows 10/11 **без ручной установки
+PHP, Composer, Node.js и PostgreSQL**. Требование учитывается на каждом этапе, а проверяется на этапах 4 и 14.
+
+**Основной способ — только Docker Desktop (одна программа):**
+1. Установить Docker Desktop (WSL 2 он настраивает сам).
+2. Скачать проект (git clone или ZIP с GitHub).
+3. Дважды кликнуть `start.bat` (или выполнить `docker compose up -d --build`).
+4. Открыть `http://localhost:8000`: база уже создана и заполнена демо-данными, демо-логины есть в README.
+
+Что для этого нужно в проекте:
+- `docker-compose.yml` по умолчанию работает в **режиме запуска**: сервисы `app` и `db` (+ `queue`),
+  фронтенд-ассеты собираются внутри образа, код копируется в образ без bind-mount. Так нет медленной
+  файловой системы Windows, проблем с правами и необходимости ставить Node на хост.
+- Режим разработки (bind-mount + Vite HMR) вынесен в `docker-compose.dev.yml`
+  (`docker compose -f docker-compose.yml -f docker-compose.dev.yml up`).
+- Первый старт без ручных шагов: `start.sh` сам создаёт `.env` из `.env.example`, генерирует `APP_KEY`,
+  ждёт БД, выполняет `migrate --force`, при пустой базе — `db:seed`, делает `storage:link`.
+- `start.bat` / `stop.bat`: проверяют, что Docker запущен (с понятным сообщением по-русски, если нет),
+  поднимают контейнеры, ждут готовности и открывают браузер.
+- Окончания строк: `*.sh` всегда LF, `*.bat` — CRLF (`.gitattributes`), иначе скрипты ломаются после
+  клонирования на Windows.
+- Порты вынесены в переменные (`APP_PORT=8000`, `DB_PORT=5432`), порт БД наружу не пробрасывается
+  в режиме запуска (нет конфликта с установленным у пользователя PostgreSQL).
+- Нет зависимостей от расширений PHP и пакетов, требующих сборки под Windows.
+
+**Запасной способ без Docker** (если виртуализация на ПК недоступна): Laravel Herd for Windows
+(один установщик, включает PHP, Composer и Node) + SQLite-файл вместо PostgreSQL. Поэтому код
+должен быть **независим от СУБД**: никаких pgsql-специфичных типов и функций в миграциях и запросах
+(JSONB-операторы, `ILIKE`, массивы и т.п.); поиск без учёта регистра делается переносимо.
+Тесты гоняются на SQLite, CI дополнительно запускает их на PostgreSQL.
+
+---
+
 ## Этап 0. Аудит текущего проекта — ✅ выполнен
 
 Результат: [`docs/stages/stage-00-audit.md`](stages/stage-00-audit.md).
@@ -129,14 +164,22 @@
    `animal_requests`, старые Blade-шаблоны, `welcome.blade.php`.
 2. Вынести дублирующийся `normalizePhone()` в отдельный сервис/правило (`App\Support\Phone`).
 3. Исправить `UserFactory` и `DatabaseSeeder` (сейчас используют несуществующие `name`/`email`).
-4. Настроить `.env.example` (pgsql, `APP_LOCALE=ru`, `APP_NAME`), локаль и часовой пояс в `config/app.php`,
-   русские сообщения валидации (`lang/ru`).
-5. Docker: проверить `docker-compose.yml`, добавить сервис `queue` (worker) и `mailpit` для писем;
-   настроить `storage:link` в `start.sh` для загрузки фото.
-6. Качество: Laravel Pint, базовые тесты (Feature), GitHub Actions (pint + phpunit + `npm run build`).
-7. Обновить README под новую тему.
+4. Настроить `.env.example` (pgsql для Docker, `APP_LOCALE=ru`, `APP_NAME`, `APP_PORT`), локаль и часовой
+   пояс в `config/app.php`, русские сообщения валидации (`lang/ru`). Отдельный пример `.env.sqlite.example`
+   для запуска без Docker.
+5. Docker под Windows (см. «Сквозное требование»): разделить `docker-compose.yml` (режим запуска, без
+   bind-mount, ассеты в образе) и `docker-compose.dev.yml` (bind-mount + Vite); добавить сервис `queue`;
+   `mailpit` — только в dev; переписать `start.sh` (автосоздание `.env`, `APP_KEY`, ожидание БД, миграции,
+   сид при пустой базе, `storage:link`); healthcheck для `app`.
+6. Скрипты `start.bat` и `stop.bat`; правила `.gitattributes` (`*.sh eol=lf`, `*.bat eol=crlf`);
+   `.dockerignore` (vendor, node_modules, .env, public/build).
+7. Качество: Laravel Pint, базовые тесты (Feature), GitHub Actions (pint + phpunit на SQLite и PostgreSQL
+   + `npm run build` + сборка Docker-образа).
+8. Обновить README: раздел «Запуск на Windows за 3 шага» первым, затем запасной способ (Herd + SQLite),
+   затем режим разработки.
 
-Критерий готовности: `docker compose up` поднимает пустое приложение, тесты и линтер зелёные.
+Критерий готовности: на чистой машине `docker compose up -d --build` (или `start.bat`) без каких-либо
+ручных шагов поднимает приложение на `http://localhost:8000`; тесты и линтер зелёные на SQLite и PostgreSQL.
 
 ---
 
@@ -270,5 +313,10 @@ ER-диаграмма в Mermaid — `docs/architecture/er.md`.
 
 1. Покрытие Feature-тестами ключевых сценариев, smoke-проверка браузером (Playwright), скриншоты страниц.
 2. Безопасность: CSRF, XSS (экранирование), загрузка файлов (mime/размер), права, rate limit.
-3. Prod-сборка Docker, переменные окружения, инструкция по деплою.
-4. Финальный README, `docs/architecture/overview.md`, демо-аккаунты из сидера.
+3. **Приёмка запуска на Windows**: пройти сценарий «чистый Windows 10/11 + Docker Desktop → `start.bat`
+   → работающий сайт с демо-данными» и запасной сценарий «Herd + SQLite» по README, буквально по шагам;
+   все шаги и найденные проблемы записать в `docs/windows-run.md`. Если реальной Windows-машины у агента
+   нет — проверить то, что можно (CRLF/LF в скриптах, работу без bind-mount, первый старт с пустым томом БД,
+   запуск на SQLite) и попросить пользователя пройти чек-лист на своём ПК.
+4. Prod-сборка Docker, переменные окружения, инструкция по деплою.
+5. Финальный README, `docs/architecture/overview.md`, демо-аккаунты из сидера.
