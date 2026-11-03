@@ -15,7 +15,7 @@
 |----|---------------------------------------------------|--------------|--------|
 | 0  | Аудит текущего проекта                            | анализ       | ✅ готов |
 | 1  | Бриф, роли, информационная архитектура, user flow | анализ       | ✅ готов |
-| 2  | Дизайн-концепция, айдентика, дизайн-токены, UI-кит | дизайн       | ⬜ не начат |
+| 2  | Дизайн-концепция, айдентика, дизайн-токены, UI-кит | дизайн       | ✅ готов |
 | 3  | Макеты ключевых экранов (desktop + mobile)        | дизайн       | ⬜ не начат |
 | 4  | Чистая инициализация проекта и окружения          | backend/devops | ⬜ не начат |
 | 5  | Модель данных: миграции, модели, фабрики, сиды    | backend      | ⬜ не начат |
@@ -104,7 +104,10 @@ PHP, Composer, Node.js и PostgreSQL**. Требование учитывает�
 
 ---
 
-## Этап 2. Дизайн-концепция, айдентика, дизайн-токены, UI-кит
+## Этап 2. Дизайн-концепция, айдентика, дизайн-токены, UI-кит — ✅ выполнен
+
+Результат: [`docs/stages/stage-02-design-concept.md`](stages/stage-02-design-concept.md), концепция «Бирка на ошейнике»,
+артефакты в `design/` и `docs/design/`. Макеты генерируются скриптом `design/tools/build.mjs` из `design/tokens.json`.
 
 **Цель:** визуальный язык продукта, как если бы дизайнер начинал работу в Adobe Illustrator.
 
@@ -235,7 +238,8 @@ ER-диаграмма в Mermaid — `docs/architecture/er.md`.
 
 Задачи:
 1. Перенести токены из `design/tokens.json` в `@theme` Tailwind 4 (`resources/css/app.css`);
-   подключить шрифты локально (без `@import` Google Fonts внутри `<style>`).
+   подключить шрифты локально из `design/fonts/` (Unbounded, Golos Text — woff2 + `fonts.css`),
+   без Google Fonts; иконки — из спрайта `design/icons/icons.svg` (компонент `<x-icon>`).
 2. Layout: шапка (навигация, кабинет, уведомления), подвал, мобильное меню, flash-сообщения.
 3. Blade-компоненты UI-кита в `resources/views/components/`: `button`, `input`, `select`, `textarea`,
    `badge`, `card`, `pet-card`, `campaign-card`, `progress`, `slot`, `modal`, `empty-state`, `pagination`.
