@@ -24,7 +24,7 @@ writeFileSync(
   harness,
   `<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="../fonts/fonts.css">
 <script>window.TOKENS=${JSON.stringify(tokens)};window.LOGO=${JSON.stringify(logo)};</script>
-<script src="lib.js"></script><script src="icons.js"></script><script src="components.js"></script><script src="kit.js"></script>`,
+<script src="lib.js"></script><script src="icons.js"></script><script src="components.js"></script><script src="kit.js"></script><script src="screens.js"></script><script src="screens2.js"></script><script src="screens3.js"></script>`,
 );
 
 const browser = await chromium.launch();
@@ -37,7 +37,9 @@ await page.evaluate(async () => {
   for (const w of [400, 500, 600, 700]) loads.push(document.fonts.load(`${w} 20px "Golos Text"`, samples));
   await Promise.all(loads);
 });
-const { files, artboards } = await page.evaluate(() => window.buildDesign());
+const { files, artboards, screens } = await page.evaluate(() => window.buildDesign());
+// --screens: перерисовать только PNG макетов экранов (SVG пишутся все).
+const onlyScreens = process.argv.includes('--screens');
 
 for (const [rel, content] of Object.entries(files)) {
   const out = join(design, rel);
@@ -62,6 +64,15 @@ async function renderPng(svgRel, pngRel, opts = {}) {
   await p.screenshot({ path: out, clip: opts.clip ?? { x: 0, y: 0, width: size.w, height: size.h }, omitBackground: !!opts.transparent });
   await p.close();
   console.log('png ', pngRel);
+}
+
+// Макеты экранов: по PNG на каждый артборд (desktop 1×, mobile 2×).
+for (const a of screens) {
+  await renderPng(a.file, a.png, { clip: { x: a.x, y: a.y, width: a.w, height: a.h }, scale: a.scale ?? 1 });
+}
+if (onlyScreens) {
+  await browser.close();
+  process.exit(0);
 }
 
 await renderPng('concept.svg', 'png/concept.png');

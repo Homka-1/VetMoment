@@ -347,10 +347,10 @@
 
   /* ---------- Карточка питомца ---------- */
   function petCard(x, y, d) {
-    const w = 296;
-    const ph = 236;
+    const w = d.w ?? 296;
+    const ph = d.ph ?? 236;
     let s = '';
-    s += rect(x, y, w, d.h ?? 438, { r: 24, fill: c('white'), stroke: d.hover ? c('ink.300') : c('ink.200'), sw: 1, filter: d.hover ? 'url(#shadow-md)' : undefined });
+    s += rect(x, y, w, d.h ?? ph + 202, { r: 24, fill: c('white'), stroke: d.hover ? c('ink.300') : c('ink.200'), sw: 1, filter: d.hover ? 'url(#shadow-md)' : undefined });
     s += petPhoto(x + 10, y + 10, w - 20, ph, { kind: d.kind, fur: d.fur, bg: d.bg, sun: d.sun, dim: d.dim });
     const b = badge(x + 22, y + 22, d.status[0], d.status[1]);
     s += rect(x + 20, y + 20, b.w + 4, 32, { r: 16, fill: c('white') });
@@ -396,7 +396,7 @@
 
   /* ---------- Карточка сбора ---------- */
   function campaignCard(x, y, d) {
-    const w = 384;
+    const w = d.w ?? 384;
     const h = 452;
     let s = rect(x, y, w, h, { r: 24, fill: c('white'), stroke: c('ink.200') });
     s += petPhoto(x + 10, y + 10, w - 20, 168, { kind: d.kind, fur: d.fur, bg: d.bg, zoom: 0.95, dy: 0 });
@@ -417,8 +417,8 @@
     yy += 36;
     s += icon('users', x + 20, yy - 14, 18, c('ink.500'));
     s += text(x + 44, yy, d.people, { size: 14, fill: c('ink.700') });
-    s += icon(d.ratio >= 1 ? 'check-circle' : 'clock', x + 206, yy - 14, 18, d.ratio >= 1 ? c('success.fg') : c('ink.500'));
-    s += text(x + 230, yy, d.left, { size: 14, fill: d.ratio >= 1 ? c('success.fg') : c('ink.700'), weight: d.ratio >= 1 ? 600 : 400 });
+    s += icon(d.ratio >= 1 ? 'check-circle' : 'clock', x + Math.round(w * 0.536), yy - 14, 18, d.ratio >= 1 ? c('success.fg') : c('ink.500'));
+    s += text(x + Math.round(w * 0.536) + 24, yy, d.left, { size: 14, fill: d.ratio >= 1 ? c('success.fg') : c('ink.700'), weight: d.ratio >= 1 ? 600 : 400 });
     yy += 22;
     s += d.ratio >= 1 ? button(x + 20, yy, 'Смотреть отчёт', { variant: 'secondary', w: w - 40 }) : button(x + 20, yy, 'Помочь сбору', { variant: 'donate', w: w - 40, icon: 'heart' });
     return g(null, s);

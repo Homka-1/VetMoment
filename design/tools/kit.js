@@ -249,7 +249,7 @@
     y += 200;
 
     // Сетка
-    s += sectionTitle(PAD, y, 'Сетка и брейкпоинты', 'Контейнер 1240 px, 12 колонок. Поля: 16 px на телефоне, 24 px на планшете, 32 px на десктопе. Макеты рисуются для 390 и 1440 px.');
+    s += sectionTitle(PAD, y, 'Сетка и брейкпоинты', 'Контейнер 1280 px, 12 колонок. Поля: 16 px на телефоне, 24 px на планшете, 32 px на десктопе. Макеты рисуются для 390 и 1440 px.');
     y += 96;
     for (let i = 0; i < 12; i++) s += rect(PAD + i * ((1280 - 11 * 32) / 12 + 32), y, (1280 - 11 * 32) / 12, 80, { fill: c('tag.100'), stroke: c('tag.200') });
     y += 110;
@@ -758,6 +758,9 @@
     return svgDoc(CW, CH, `<g id="artboard-concept" data-name="Концепция">${s}</g>`, { title: 'VetMoment — концепция «Бирка»' });
   }
 
+  // Экспорт для генератора экранов (screens.js).
+  window.KIT = { logoLockup, svgDoc, LOCK };
+
   window.buildDesign = function () {
     const files = { ...brandFiles() };
     files['brand/logo-sheet.svg'] = logoSheet();
@@ -766,6 +769,8 @@
     files['concept.svg'] = concept();
     const kit = uiKit();
     files['ui-kit.svg'] = kit.svg;
-    return { files, artboards: kit.meta };
+    const screens = window.buildScreens ? window.buildScreens() : { files: {}, artboards: [] };
+    Object.assign(files, screens.files);
+    return { files, artboards: kit.meta, screens: screens.artboards };
   };
 })();
