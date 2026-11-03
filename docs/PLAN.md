@@ -14,7 +14,7 @@
 | №  | Этап                                              | Тип          | Статус |
 |----|---------------------------------------------------|--------------|--------|
 | 0  | Аудит текущего проекта                            | анализ       | ✅ готов |
-| 1  | Бриф, роли, информационная архитектура, user flow | анализ       | ⬜ не начат |
+| 1  | Бриф, роли, информационная архитектура, user flow | анализ       | ✅ готов |
 | 2  | Дизайн-концепция, айдентика, дизайн-токены, UI-кит | дизайн       | ⬜ не начат |
 | 3  | Макеты ключевых экранов (desktop + mobile)        | дизайн       | ⬜ не начат |
 | 4  | Чистая инициализация проекта и окружения          | backend/devops | ⬜ не начат |
@@ -72,7 +72,9 @@ PHP, Composer, Node.js и PostgreSQL**. Требование учитывает�
 
 ---
 
-## Этап 1. Бриф, роли, информационная архитектура, user flow
+## Этап 1. Бриф, роли, информационная архитектура, user flow — ✅ выполнен
+
+Результат: [`docs/stages/stage-01-brief.md`](stages/stage-01-brief.md), артефакты в `docs/product/`.
 
 **Цель:** зафиксировать, что именно строим, для кого и в каких сценариях.
 
@@ -187,23 +189,25 @@ PHP, Composer, Node.js и PostgreSQL**. Требование учитывает�
 
 **Цель:** схема БД под три ключевые функции.
 
-Сущности (уточняются по итогам этапа 1):
-- `users` — login, name, phone, email, role (`volunteer`, `shelter_staff`, `admin`), avatar.
-- `shelters` — name, slug, description, address, city, phone, email, logo, status модерации,
-  связь со staff-пользователями (`shelter_user`).
+Сущности (уточнены на этапе 1 — **источник истины: [`docs/product/data-requirements.md`](product/data-requirements.md)**):
+- `users` — login, name, phone, email, role (`volunteer`, `shelter_staff`, `admin`), avatar, is_blocked.
+- `shelters` — name, slug, description, address, city, phone, email, logo, walk_rules, status модерации
+  (`pending`, `approved`, `rejected`, `blocked`), связь со staff-пользователями (`shelter_user`, роль `owner`/`staff`).
 - `pets` — shelter_id, name, slug, species (кошка/собака/другое), sex, birth_date/возраст, size,
-  breed, color, character, health (прививки, стерилизация, чипирование), story, status
-  (`looking_for_home`, `on_treatment`, `reserved`, `adopted`), `can_walk`, флаг «под опеку».
+  breed, color, character, traits, health (прививки, стерилизация, чипирование), story, status
+  (`draft`, `looking_for_home`, `on_treatment`, `reserved`, `adopted`, `archived`), `can_walk`,
+  `guardianship_available`, `arrived_at`, `is_hidden`.
 - `pet_photos` — pet_id, path, sort, is_cover.
-- `adoption_applications` — pet_id, user_id, contacts, опыт, условия, status.
+- `adoption_applications` — pet_id, user_id, type (`adoption` / `guardianship`), contacts, опыт, условия, status.
 - `donation_campaigns` — shelter_id, nullable pet_id, title, description, goal_amount, raised_amount,
   starts_at, ends_at, status, cover.
 - `donations` — campaign_id (nullable → «в общий фонд приюта»), shelter_id, user_id (nullable),
   donor_name, amount, comment, is_anonymous, payment_status, provider, provider_payment_id.
-- `campaign_reports` — отчёты о расходовании средств (текст + фото/чеки).
-- `walk_slots` — shelter_id, nullable pet_id, starts_at, ends_at, capacity, status.
-- `walk_bookings` — walk_slot_id, user_id, pet_id, status (`pending`, `confirmed`, `cancelled`,
-  `completed`, `no_show`), comment.
+- `campaign_reports` — отчёты о расходовании средств (текст + фото/чеки, `report_attachments`).
+- `walk_slots` — shelter_id, starts_at, ends_at, capacity, booked_count, meeting_point, status;
+  питомцы слота — через `walk_slot_pet`; шаблоны недели — `walk_templates` (+ `walk_template_pet`).
+- `walk_bookings` — walk_slot_id, user_id, pet_id, status (`pending`, `confirmed`, `rejected`, `cancelled`,
+  `completed`, `no_show`), comment, shelter_comment, cancelled_by.
 - `favorites` — user_id + pet_id.
 - `notifications` — стандартная таблица Laravel.
 
