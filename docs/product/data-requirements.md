@@ -3,8 +3,9 @@
 Уточняет список сущностей этапа 5 в `docs/PLAN.md`. Типы указаны логически; конкретные миграции —
 на этапе 5. Общие правила:
 
-- деньги — в **копейках**, `unsignedBigInteger`;
-- даты/время — UTC в БД, отображение в `Europe/Moscow`;
+- валюта — **тенге (KZT, ₸)**; деньги — в **тиынах** (1 ₸ = 100 тиын), `unsignedBigInteger`; поле `currency` не вводим (одна валюта);
+- даты/время — UTC в БД, отображение в `Asia/Almaty` (UTC+5);
+- телефоны — казахстанские в E.164: `+77XXXXXXXXX` (12 символов), отображение `+7 7XX XXX XX XX`;
 - статусы — PHP backed enums (`string`), хранятся как `string` (без pgsql-специфичных типов);
 - у публичных сущностей — `slug` (уникальный, латиница), ЧПУ;
 - поиск без учёта регистра — переносимо (`LOWER(col) LIKE LOWER(?)`), без `ILIKE`;
@@ -17,7 +18,7 @@
 |------|-----|:-----:|---------|
 | login | string(32) | ✅ | уникальный, `[a-z0-9_.-]`, 3–32 |
 | name | string(100) | ✅ | имя для отображения |
-| phone | string(16) | ✅ | E.164 (`+7XXXXXXXXXX`), уникальный, нормализация `App\Support\Phone` |
+| phone | string(16) | ✅ | казахстанский номер в E.164 `+77XXXXXXXXX`, уникальный; ввод `8 7XX…`, `7 7XX…`, `+7 (7XX)…` нормализуется `App\Support\Phone`; российские `+7 9XX…` отклоняются |
 | email | string(255) | ✅ | уникальный — для восстановления пароля и квитанций |
 | password | hash | ✅ | ≥ 8 символов |
 | role | enum `Role` | ✅ | `volunteer` по умолчанию |
@@ -36,10 +37,10 @@
 | description | text | ✅ | 50–5000 символов |
 | city | string(100) | ✅ | |
 | address | string(255) | ✅ | |
-| phone | string(16) | ✅ | E.164 |
+| phone | string(16) | ✅ | E.164 `+77XXXXXXXXX` (мобильный или городской, напр. `+7 727…` Алматы, `+7 717…` Астана) |
 | email | string | ✅ | |
 | website / social_links | string(255) | — | URL |
-| inn / ogrn | string | — | только цифры, 10/12 и 13/15 |
+| bin_iin | string(12) | — | БИН юрлица или ИИН частного куратора: 12 цифр, проверка контрольного разряда |
 | logo_path | string | — | |
 | walk_rules | text | — | правила выгула, показываются при бронировании |
 | status | enum `ShelterStatus` | ✅ | `pending`, `approved`, `rejected`, `blocked` |
@@ -110,8 +111,8 @@
 | slug | string | ✅ | уникальный |
 | short_description | string(200) | ✅ | для карточки |
 | description | text | ✅ | на что нужны деньги, смета |
-| goal_amount | unsignedBigInteger (коп.) | ✅ | 1 000 ₽ – 10 000 000 ₽ |
-| raised_amount | unsignedBigInteger (коп.) | ✅ | **денормализация**, пересчёт только по `succeeded` пожертвованиям в транзакции |
+| goal_amount | unsignedBigInteger (тиын) | ✅ | 5 000 ₸ – 50 000 000 ₸ |
+| raised_amount | unsignedBigInteger (тиын) | ✅ | **денормализация**, пересчёт только по `succeeded` пожертвованиям в транзакции |
 | donations_count | unsignedInteger | ✅ | денормализация |
 | starts_at | datetime | ✅ | |
 | ends_at | datetime | — | ≤ 1 год от старта; пусто — бессрочный до достижения цели |
@@ -123,7 +124,7 @@
 
 Прогресс = `raised_amount / goal_amount`, ограничен 100 % в прогресс-баре (текстом — реальная сумма).
 
-`campaign_reports`: `campaign_id`, `title`, `body` (text), `spent_amount` (коп., опц.),
+`campaign_reports`: `campaign_id`, `title`, `body` (text), `spent_amount` (тиын, опц.),
 `published_at`, вложения — `report_attachments` (`path`, `type`: фото/чек, до 10 шт.).
 
 ## 6. Пожертвование — `donations`
@@ -137,15 +138,15 @@
 | donor_name | string(100) | — | |
 | donor_email | string | ✅ | для квитанции/чека |
 | is_anonymous | bool | ✅ | публично показывается «Аноним» |
-| amount | unsignedBigInteger (коп.) | ✅ | 50 ₽ – 1 000 000 ₽ |
+| amount | unsignedBigInteger (тиын) | ✅ | 200 ₸ – 5 000 000 ₸, целые тенге |
 | comment | string(500) | — | публикуется, если не анонимно |
 | status | enum `PaymentStatus` | ✅ | `pending`, `succeeded`, `failed`, `expired`, `refunded` |
-| provider | string | ✅ | `fake`, позже `yookassa` / `cloudpayments` |
+| provider | string | ✅ | `fake`, позже `cloudpayments_kz` / `halyk_epay` / `kaspi_pay` |
 | provider_payment_id | string | — | уникальный (провайдер + id) — идемпотентность webhook |
 | idempotency_key | uuid | ✅ | уникальный, для создания платежа |
 | paid_at | datetime | — | |
 
-Пресеты сумм: 300, 500, 1 000, 3 000 ₽. Пересчёт `raised_amount` — только переходы в/из `succeeded`.
+Пресеты сумм: 1 000, 2 000, 5 000, 10 000 ₸. Пересчёт `raised_amount` — только переходы в/из `succeeded`.
 
 ## 7. Слоты и записи на выгул — `walk_slots`, `walk_slot_pet`, `walk_bookings`
 
@@ -206,10 +207,10 @@
 |---------|-----------|
 | Устройства | mobile first; адаптив 360–1920 px; основные сценарии (каталог → выгул, пожертвование) проходимы с телефона одной рукой |
 | Доступность | WCAG 2.1 AA: контраст ≥ 4.5:1 (текст), ≥ 3:1 (крупный текст, UI), видимый фокус, навигация с клавиатуры, `alt` у фото (по умолчанию «Кличка — вид, фото N»), `label` у полей, ошибки связаны с полями через `aria-describedby`, статусы не только цветом |
-| Язык | интерфейс, письма, ошибки валидации — на русском; форматы: `1 500 ₽`, `3 ноября, 14:00`, склонения («2 года», «5 месяцев», «осталось 3 места») |
+| Язык | интерфейс, письма, ошибки валидации — на русском; форматы: `1 500 ₸`, `+7 701 234 56 78`, `3 ноября, 14:00`, склонения («2 года», «5 месяцев», «осталось 3 места») |
 | Производительность | TTFB главной ≤ 500 мс в Docker на демо-данных; без N+1 (eager loading, проверка в тестах); изображения webp + `loading="lazy"`; JS ≤ 50 КБ gzip; страницы рендерятся сервером (Blade) и работают без JS для ключевых форм |
 | Безопасность | CSRF, экранирование вывода, валидация через Form Requests, rate limit (вход, формы заявок, пожертвования), проверка mime/размера загрузок, политики доступа; контакты заявителей и записавшихся видит только их приют |
 | Данные | согласие на обработку ПДн в формах; без реальных платёжных ключей в репозитории |
 | Переносимость | PostgreSQL 15 и SQLite; запуск на Windows только с Docker Desktop (см. `docs/PLAN.md`) |
 | SEO | ЧПУ, мета-теги, Open Graph для питомцев и сборов, `sitemap.xml` |
-| Часовой пояс | `Europe/Moscow` для отображения; в MVP все приюты в одном часовом поясе (см. долги) |
+| Часовой пояс | `Asia/Almaty` для отображения (с 2024 г. в Казахстане единый пояс UTC+5) |
