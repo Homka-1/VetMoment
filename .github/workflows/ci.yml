@@ -1,0 +1,108 @@
+name: CI
+
+on:
+    push:
+        branches: [main, 'claude/**']
+    pull_request:
+
+concurrency:
+    group: ci-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    pint:
+        name: Pint (стиль кода)
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.4'
+                  coverage: none
+            - run: composer install --no-interaction --no-progress --prefer-dist
+            - run: ./vendor/bin/pint --test
+
+    tests:
+        name: Тесты (${{ matrix.db }})
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                db: [sqlite, pgsql]
+        services:
+            postgres:
+                image: postgres:15-alpine
+                env:
+                    POSTGRES_DB: vetmoment_test
+                    POSTGRES_USER: vet_user
+                    POSTGRES_PASSWORD: vet_pass
+                ports:
+                    - 5432:5432
+                options: >-
+                    --health-cmd "pg_isready -U vet_user -d vetmoment_test"
+                    --health-interval 5s --health-timeout 5s --health-retries 10
+        steps:
+            - uses: actions/checkout@v4
+            - uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.4'
+                  extensions: pdo_sqlite, pdo_pgsql
+                  coverage: none
+            - run: composer install --no-interaction --no-progress --prefer-dist
+            - run: cp .env.example .env
+            - name: Тесты на SQLite (in-memory, как в phpunit.xml)
+              if: matrix.db == 'sqlite'
+              run: php artisan test
+            - name: Тесты на PostgreSQL 15
+              if: matrix.db == 'pgsql'
+              env:
+                  DB_CONNECTION: pgsql
+                  DB_HOST: 127.0.0.1
+                  DB_PORT: 5432
+                  DB_DATABASE: vetmoment_test
+                  DB_USERNAME: vet_user
+                  DB_PASSWORD: vet_pass
+              # Переменные окружения job-а перекрывают DB_* из phpunit.xml (force не задан)
+              run: php artisan test
+            - name: Миграции и демо-данные с нуля
+              env:
+                  DB_CONNECTION: ${{ matrix.db }}
+                  DB_HOST: 127.0.0.1
+                  DB_DATABASE: ${{ matrix.db == 'pgsql' && 'vetmoment_test' || 'database/ci.sqlite' }}
+                  DB_USERNAME: vet_user
+                  DB_PASSWORD: vet_pass
+              run: |
+                  touch database/ci.sqlite
+                  php artisan key:generate --force
+                  php artisan migrate:fresh --force
+                  php artisan app:seed-if-empty
+                  php artisan app:seed-if-empty
+
+    assets:
+        name: Сборка фронтенда
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: '22'
+                  cache: npm
+            - run: npm ci
+            - run: npm run build
+
+    docker:
+        name: Docker-образ и запуск
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Сборка и запуск, как у пользователя (docker compose up -d --build)
+              run: docker compose up -d --build --wait --wait-timeout 300
+            - name: Сайт отвечает на http://localhost:8000
+              run: |
+                  curl -fsS http://localhost:8000/up
+                  curl -fsS http://localhost:8000/ | grep -q VetMoment
+            - name: Журнал при ошибке
+              if: failure()
+              run: docker compose logs
+            - run: docker compose down -v
+              if: always()

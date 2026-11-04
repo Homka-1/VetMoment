@@ -19,6 +19,8 @@
     </source>
     <php>
         <env name="APP_ENV" value="testing"/>
+        <!-- Ключ только для тестов, чтобы они шли без .env (CI, SQLite in-memory) -->
+        <env name="APP_KEY" value="base64:dGVzdGluZy1rZXktdmV0bW9tZW50LTMyLWJ5dGVzISE="/>
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="BROADCAST_CONNECTION" value="null"/>

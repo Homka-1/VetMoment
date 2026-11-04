@@ -1,0 +1,54 @@
+# VetMoment — режим разработки (дополнение к docker-compose.yml):
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+# Код монтируется с хоста, Vite dev server с HMR на :5173, письма — в Mailpit (http://localhost:8025),
+# PostgreSQL доступен с хоста на :${DB_PORT:-5432}.
+
+services:
+    app:
+        environment:
+            APP_ENV: local
+            APP_DEBUG: "true"
+            LOG_LEVEL: debug
+            MAIL_MAILER: smtp
+            MAIL_HOST: mailpit
+            MAIL_PORT: 1025
+        volumes:
+            - .:/var/www/html
+            - vetmoment_storage:/var/www/html/storage
+
+    queue:
+        environment:
+            APP_ENV: local
+            APP_DEBUG: "true"
+            LOG_LEVEL: debug
+            MAIL_MAILER: smtp
+            MAIL_HOST: mailpit
+            MAIL_PORT: 1025
+        volumes:
+            - .:/var/www/html
+            - vetmoment_storage:/var/www/html/storage
+
+    vite:
+        image: node:22-alpine
+        container_name: vetmoment_vite
+        working_dir: /var/www/html
+        command: sh -c "npm ci && npm run dev -- --host 0.0.0.0 --port 5173"
+        ports:
+            - "5173:5173"
+        volumes:
+            - .:/var/www/html
+            # node_modules — в томе: быстрее, чем через файловую систему Windows
+            - vetmoment_node_modules:/var/www/html/node_modules
+
+    mailpit:
+        image: axllent/mailpit:latest
+        container_name: vetmoment_mailpit
+        ports:
+            - "8025:8025"
+
+    db:
+        ports:
+            - "${DB_PORT:-5432}:5432"
+
+volumes:
+    vetmoment_node_modules:

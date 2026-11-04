@@ -11,15 +11,13 @@ class DatabaseSeeder extends Seeder
     use WithoutModelEvents;
 
     /**
-     * Seed the application's database.
+     * Демо-данные. Полный набор (приюты, питомцы, сборы, слоты) — на этапе 5.
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
         User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            'login' => 'demo',
+            'phone' => '+77010000001',
         ]);
     }
 }

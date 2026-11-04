@@ -1,51 +1,78 @@
+# VetMoment — режим запуска (для Windows/macOS/Linux с Docker Desktop).
+#   docker compose up -d --build   →   http://localhost:8000
+# Код и собранные ассеты — внутри образа (без bind-mount), порт БД наружу не открыт.
+# Режим разработки: docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+
+name: vetmoment
+
+x-app-env: &app-env
+    APP_NAME: VetMoment
+    APP_ENV: ${APP_ENV:-production}
+    APP_DEBUG: ${APP_DEBUG:-false}
+    APP_URL: http://localhost:${APP_PORT:-8000}
+    APP_PORT: ${APP_PORT:-8000}
+    LOG_CHANNEL: stderr
+    LOG_LEVEL: ${LOG_LEVEL:-warning}
+    DB_CONNECTION: pgsql
+    DB_HOST: db
+    DB_PORT: 5432
+    DB_DATABASE: vetmoment
+    DB_USERNAME: vet_user
+    DB_PASSWORD: vet_pass
+    QUEUE_CONNECTION: database
+    SESSION_DRIVER: database
+    CACHE_STORE: database
+    MAIL_MAILER: log
+
 services:
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: vetmoment_app
-    ports:
-      - "8000:80"
-    volumes:
-      - .:/var/www/html
-      - /var/www/html/public/build
-    depends_on:
-      db:
-        condition: service_healthy
-    environment:
-      - DB_CONNECTION=pgsql
-      - DB_HOST=db
-      - DB_PORT=5432
-      - DB_DATABASE=vetmoment
-      - DB_USERNAME=vet_user
-      - DB_PASSWORD=vet_pass
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        image: vetmoment-app
+        container_name: vetmoment_app
+        command: ["app"]
+        restart: unless-stopped
+        ports:
+            - "${APP_PORT:-8000}:80"
+        environment: *app-env
+        volumes:
+            # Загруженные файлы, ключ приложения и кеши переживают пересоздание контейнера
+            - vetmoment_storage:/var/www/html/storage
+        depends_on:
+            db:
+                condition: service_healthy
 
-  vite:
-    image: node:20-alpine
-    container_name: vetmoment_vite
-    working_dir: /var/www/html
-    volumes:
-      - .:/var/www/html
-    ports:
-      - "5173:5173"
-    command: sh -lc "npm install && npm run dev -- --host 0.0.0.0 --port 5173"
+    queue:
+        image: vetmoment-app
+        container_name: vetmoment_queue
+        command: ["queue"]
+        restart: unless-stopped
+        environment: *app-env
+        volumes:
+            - vetmoment_storage:/var/www/html/storage
+        healthcheck:
+            disable: true
+        depends_on:
+            app:
+                condition: service_healthy
 
-  db:
-    image: postgres:15-alpine
-    container_name: vetmoment_db
-    environment:
-      - POSTGRES_DB=vetmoment
-      - POSTGRES_USER=vet_user
-      - POSTGRES_PASSWORD=vet_pass
-    ports:
-      - "5432:5432"
-    volumes:
-      - vetmoment_pgdata:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U vet_user -d vetmoment"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+    db:
+        image: postgres:15-alpine
+        container_name: vetmoment_db
+        restart: unless-stopped
+        environment:
+            POSTGRES_DB: vetmoment
+            POSTGRES_USER: vet_user
+            POSTGRES_PASSWORD: vet_pass
+        volumes:
+            - vetmoment_pgdata:/var/lib/postgresql/data
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U vet_user -d vetmoment"]
+            interval: 5s
+            timeout: 5s
+            retries: 10
 
 volumes:
-  vetmoment_pgdata:
+    vetmoment_pgdata:
+    vetmoment_storage:
