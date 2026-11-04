@@ -58,6 +58,9 @@ Illustrator в окружении недоступен. Макеты созда�
 было открыть и доработать в Illustrator/Figma/Inkscape. К каждому SVG — PNG-превью
 (рендер через Playwright) в `design/**/png/`. Исходники `.ai` от пользователя, если появятся,
 лежат в `design/source/` — они главнее SVG.
+Нативные `.ai` собирает скрипт Illustrator `design/illustrator/VetMoment-to-AI.jsx` (инструкция —
+`design/illustrator/README.md`); после изменения макетов пересобери его данные: `node design/tools/illustrator.mjs`
+(вызывается и из `build.mjs`).
 
 ## 3. Обязательное требование: простой запуск на Windows
 

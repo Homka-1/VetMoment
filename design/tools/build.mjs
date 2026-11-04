@@ -72,6 +72,7 @@ for (const a of screens) {
 }
 if (onlyScreens) {
   await browser.close();
+  execFileSync(process.execPath, [join(here, 'illustrator.mjs')], { stdio: 'inherit' });
   process.exit(0);
 }
 
@@ -85,3 +86,6 @@ for (const s of [16, 32, 180, 512]) await renderPng('brand/favicon.svg', `brand/
 await renderPng('icons/icon-sheet.svg', 'png/icon-sheet.png');
 
 await browser.close();
+
+// Копии макетов для Adobe Illustrator (design/illustrator/) — из только что собранных SVG.
+execFileSync(process.execPath, [join(here, 'illustrator.mjs')], { stdio: 'inherit' });
