@@ -16,6 +16,7 @@ use App\Policies\WalkBookingPolicy;
 use App\Policies\WalkSlotPolicy;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
@@ -41,6 +42,10 @@ class AppServiceProvider extends ServiceProvider
 
         // Требования к паролю: не короче 8 символов (docs/product/data-requirements.md).
         Password::defaults(fn () => Password::min(8)->max(255));
+
+        // Пагинация в стиле UI-кита (resources/views/pagination/vetmoment.blade.php).
+        Paginator::defaultView('pagination.vetmoment');
+        Paginator::defaultSimpleView('pagination.vetmoment');
     }
 
     private function registerPolicies(): void

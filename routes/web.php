@@ -7,10 +7,14 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Cabinet\ShelterApplicationController;
 use App\Http\Controllers\CabinetStubController;
+use App\Http\Controllers\StyleguideController;
 use Illuminate\Support\Facades\Route;
 
-// Временная заглушка главной; настоящие страницы появляются с этапа 7.
+// Главная: на этапе 7 — статичные блоки (герой, три пути помощи), блоки с данными — после этапов 8–10.
 Route::view('/', 'home')->name('home');
+
+// Витрина UI-кита — только local/testing (в production контроллер отдаёт 404).
+Route::get('/styleguide', StyleguideController::class)->name('styleguide');
 
 // --- Аутентификация -------------------------------------------------------------------------
 Route::middleware('guest')->group(function () {

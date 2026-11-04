@@ -1,18 +1,12 @@
-@extends('layouts.stub')
+<x-layouts.auth title="Восстановление пароля" heading="Забыли пароль?" illustration="dog-graphite"
+                aside-title="Граф подождёт" aside-text="Ссылка для смены пароля действует 60 минут. Если письма нет — проверьте папку «Спам».">
+    <x-slot:subtitle>Укажите почту, с которой регистрировались, — пришлём ссылку для смены пароля.</x-slot:subtitle>
 
-@section('title', 'Восстановление пароля')
-
-@section('content')
-    <p class="mb-4">Укажите почту, с которой регистрировались, — пришлём ссылку для смены пароля.</p>
-
-    <form method="POST" action="{{ route('password.email') }}" class="grid gap-4">
+    <form method="POST" action="{{ route('password.email') }}" class="grid gap-5" novalidate>
         @csrf
-        <label class="grid gap-1">
-            <span>Эл. почта</span>
-            <input type="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="email" class="rounded border p-2">
-        </label>
-        <button type="submit" class="rounded border p-2 font-bold">Отправить ссылку</button>
+        <x-input name="email" type="email" label="Эл. почта" required autofocus autocomplete="email" placeholder="name@mail.kz" />
+        <x-button size="lg" block>Отправить ссылку</x-button>
     </form>
 
-    <p class="mt-6"><a href="{{ route('login') }}" class="underline">Вернуться ко входу</a></p>
-@endsection
+    <p class="mt-6 text-sm"><a href="{{ route('login') }}" class="link">Вернуться ко входу</a></p>
+</x-layouts.auth>

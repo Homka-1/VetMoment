@@ -1,28 +1,46 @@
-@extends('layouts.stub')
+{{-- Стартовая страница кабинета до этапа 11: приветствие, статус приюта и ссылки, которые уже работают. --}}
+<x-layouts.cabinet :title="$title">
+    <div class="grid gap-6">
+        @isset($shelter)
+            @if ($shelter->status === \App\Enums\ShelterStatus::Pending)
+                <x-alert tone="warning" title="Приют «{{ $shelter->name }}» на модерации">
+                    Можно готовить черновики анкет и сборов — опубликовать их получится после проверки.
+                    Обычно она занимает 1–2 рабочих дня.
+                </x-alert>
+            @elseif ($shelter->status === \App\Enums\ShelterStatus::Rejected)
+                <x-alert tone="danger" title="Заявка приюта отклонена">
+                    <p>{{ $shelter->moderation_comment }}</p>
+                    <x-slot:action>
+                        <x-button variant="secondary" size="sm" :href="route('cabinet.shelter-request')">Исправить заявку</x-button>
+                    </x-slot:action>
+                </x-alert>
+            @elseif ($shelter->status === \App\Enums\ShelterStatus::Blocked)
+                <x-alert tone="danger" title="Приют заблокирован">{{ $shelter->moderation_comment }}</x-alert>
+            @endif
+        @endisset
 
-@section('title', $title)
+        <x-card padding="lg" class="flex flex-col gap-6 md:flex-row md:items-center">
+            <x-avatar :name="$user->name" size="lg" />
+            <div class="min-w-0 flex-1">
+                <p class="type-h4">Здравствуйте, {{ $user->name }}</p>
+                <p class="mt-1 text-secondary">Вы вошли как <strong class="font-semibold text-primary">{{ $user->login }}</strong> — {{ mb_strtolower($user->role->label()) }}.</p>
+                @isset($shelter)
+                    <div class="mt-3 flex flex-wrap items-center gap-2 text-sm text-secondary">
+                        Приют <strong class="font-semibold text-primary">{{ $shelter->name }}</strong>
+                        <x-badge :status="$shelter->status" />
+                    </div>
+                @endisset
+            </div>
+        </x-card>
 
-@section('content')
-    <p>Вы вошли как <strong>{{ $user->name }}</strong> ({{ $user->login }}) — {{ $user->role->label() }}.</p>
-
-    @isset($shelter)
-        <p class="mt-4">Приют: <strong>{{ $shelter->name }}</strong> — {{ $shelter->status->label() }}.</p>
-        @if ($shelter->status === \App\Enums\ShelterStatus::Pending)
-            <p class="mt-2">Заявка на модерации: можно готовить черновики, публикация — после одобрения.</p>
-        @elseif ($shelter->status === \App\Enums\ShelterStatus::Rejected)
-            <p class="mt-2">Заявка отклонена: {{ $shelter->moderation_comment }}</p>
-            <p class="mt-2"><a href="{{ route('cabinet.shelter-request') }}" class="underline">Исправить и отправить снова</a></p>
-        @endif
-    @endisset
-
-    @can('register', \App\Models\Shelter::class)
-        <p class="mt-4"><a href="{{ route('cabinet.shelter-request') }}" class="underline">Стать приютом-партнёром</a></p>
-    @endcan
-
-    <p class="mt-4 text-sm">Разделы кабинета появятся на этапе 11.</p>
-
-    <form method="POST" action="{{ route('logout') }}" class="mt-6">
-        @csrf
-        <button type="submit" class="rounded border px-4 py-2">Выйти</button>
-    </form>
-@endsection
+        <x-empty-state title="Разделы кабинета скоро появятся" illustration="cat-smoke" tone="sky">
+            Здесь появятся разделы для работы с питомцами, заявками, сборами и выгулами. А пока можно посмотреть, кто ждёт знакомства.
+            <x-slot:action>
+                @can('register', \App\Models\Shelter::class)
+                    <x-button variant="secondary" :href="route('cabinet.shelter-request')" icon="home">Стать приютом-партнёром</x-button>
+                @endcan
+                <x-button :href="\App\Support\Navigation::url('pets.index', '/pets')" icon="paw">Смотреть питомцев</x-button>
+            </x-slot:action>
+        </x-empty-state>
+    </div>
+</x-layouts.cabinet>

@@ -7,6 +7,7 @@ use App\Enums\PetStatus;
 use App\Enums\Sex;
 use App\Enums\Species;
 use App\Models\Concerns\HasSlug;
+use App\Support\Plural;
 use Database\Factories\PetFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
@@ -160,7 +161,7 @@ class Pet extends Model
 
     /**
      * Возраст в полных месяцах (null, если дата рождения неизвестна).
-     * Склонение («2 года», «5 месяцев») — в хелперах форматирования (этап 7).
+     * Подпись со склонением — ageLabel().
      */
     public function ageInMonths(?Carbon $at = null): ?int
     {
@@ -169,6 +170,26 @@ class Pet extends Model
         }
 
         return (int) $this->birth_date->diffInMonths($at ?? now(), absolute: true);
+    }
+
+    /** «2 года», «5 месяцев»; null, если дата рождения неизвестна. */
+    public function ageLabel(?Carbon $at = null): ?string
+    {
+        $months = $this->ageInMonths($at);
+
+        return $months === null ? null : Plural::age($months);
+    }
+
+    /** Строка под кличкой на карточке: «Собака, 2 года, мальчик». */
+    public function summary(): string
+    {
+        $parts = [$this->species->label(), $this->ageLabel()];
+
+        if ($this->sex !== Sex::Unknown) {
+            $parts[] = mb_strtolower($this->sex->label());
+        }
+
+        return implode(', ', array_filter($parts));
     }
 
     /**
