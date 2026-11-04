@@ -147,6 +147,7 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
 | Сайт | <http://localhost:8000> |
 | Vite dev server | <http://localhost:5173> |
 | Mailpit (письма) | <http://localhost:8025> |
+| Витрина UI-кита (только в режиме разработки) | <http://localhost:8000/styleguide> |
 | PostgreSQL | `localhost:5432`, база `vetmoment`, пользователь `vet_user` / `vet_pass` |
 
 При первом запуске контейнер сам выполнит `composer install` (с dev-пакетами), а сервис `vite` — `npm ci`.
@@ -193,5 +194,8 @@ docker compose logs -f app queue
   (нормализация — `App\Support\Phone`, правило валидации — `App\Rules\KazakhPhone`).
 - Время в БД — UTC, показывается в `Asia/Almaty` (`config('app.display_timezone')`).
 - Код не зависит от СУБД: тесты идут на SQLite, CI дополнительно гоняет их на PostgreSQL 15.
+- Интерфейс: дизайн-токены — в `@theme` (`resources/css/app.css`), UI-кит — Blade-компоненты
+  `resources/views/components/` (витрина — `/styleguide`), шрифты и иконки — локальные, без CDN.
+  Суммы выводятся через `App\Support\Money::format()` (`1 500 ₸`), даты — `App\Support\LocalTime`.
 
 Инструкции для разработки по этапам — [`CLAUDE.md`](CLAUDE.md), заметки по этапам — [`docs/stages/`](docs/stages/).
