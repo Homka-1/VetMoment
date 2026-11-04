@@ -168,7 +168,7 @@ PHP, Composer, Node.js и PostgreSQL**. Требование учитывает�
 ## Этап 4. Чистая инициализация проекта и окружения — ✅ выполнен
 
 Результат: [`docs/stages/stage-04-init.md`](stages/stage-04-init.md). `start.sh` перенесён в `docker/start.sh`;
-сборку образа с `pdo_pgsql`, тесты на PostgreSQL и `start.bat` нужно подтвердить первым прогоном CI / на Windows.
+сборка образа и тесты на PostgreSQL подтверждены в CI; `start.bat` нужно проверить на Windows.
 
 **Цель:** чистая техническая основа под новую тему.
 

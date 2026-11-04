@@ -1,7 +1,7 @@
 # Этап 4. Чистая инициализация проекта и окружения
 
-Дата: 2026-11-04 · Статус: ⚠️ готов с оговорками (сборку образа с `pdo_pgsql` и тесты на PostgreSQL
-в окружении агента проверить не удалось — см. «Как проверялось»)
+Дата: 2026-11-04 · Статус: ✅ готов (сборка образа и PostgreSQL подтверждены в GitHub Actions;
+`start.bat` на Windows ещё не запускался — см. «Как проверялось»)
 
 ## Цель этапа
 Чистая техническая основа под новую тему: без старого домена, с запуском на Windows одним
@@ -96,11 +96,11 @@
 | `php artisan test` (SQLite in-memory) | ✅ 29 тестов, 62 проверки |
 | `./vendor/bin/pint --test` | ✅ |
 | `npm run build` | ✅ |
-| `docker compose build` по оригинальному `Dockerfile` | ⚠️ не проверено: стадия `apt-get` (libpq-dev для `pdo_pgsql`) не может скачать пакеты в этом окружении |
+| `docker compose up -d --build --wait` по оригинальному `Dockerfile` с PostgreSQL | ✅ в GitHub Actions (локально стадия `apt-get` не скачивает пакеты из-за сети окружения). Первый прогон CI выявил, что `--wait` падает на `queue` без healthcheck — добавлена проверка процесса `queue:work` |
 | Полный сценарий запуска на образе без `apt`-шага (vendor с хоста), БД — SQLite | ✅ `.env` и `APP_KEY` создаются сами, миграции, сид, `storage:link`, Apache, healthcheck `healthy`, `/` → 200, ассеты из `public/build` → 200, 404 работает; `queue` выполняет задания; после `down`/`up` ключ сохранился, сид не повторился |
 | Режим разработки (`docker-compose.dev.yml`) | ✅ bind-mount, Vite HMR (`public/hot`, `@vite/client` → 200), `php artisan test` в контейнере; ⚠️ `npm ci` внутри контейнера и `mailpit` не проверены (сеть/лимит Docker Hub) |
 | Запасной путь `.env.sqlite.example` (key:generate, migrate --seed, storage:link, serve) | ✅ |
-| Тесты и миграции на PostgreSQL 15 | ⚠️ не проверено локально (нет PHP 8.4 с `pdo_pgsql`) — проверяет CI |
+| Тесты и миграции на PostgreSQL 15 | ✅ в GitHub Actions |
 | `start.bat` / `stop.bat` | ⚠️ не проверено (нет Windows); CRLF в рабочей копии подтверждён |
 
 Команды для повторной проверки (на машине с Docker):
@@ -119,8 +119,7 @@ docker compose exec app php artisan test
 ```
 
 ## Известные проблемы и долги
-- Нужно подтвердить на реальной машине (или по первому прогону CI): сборка образа с `pdo_pgsql`, тесты на
-  PostgreSQL, `start.bat` на Windows 10/11.
+- Нужно подтвердить на реальной машине: `start.bat` на Windows 10/11.
 - `php artisan test` **без `.env`** выводит безвредные предупреждения `file_get_contents(.env)` (Collision
   показывает подавленное предупреждение phpdotenv). С `.env` (как в Docker и CI) их нет.
 - `mailpit` — тег `latest` (только dev).

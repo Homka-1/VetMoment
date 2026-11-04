@@ -51,8 +51,13 @@ services:
         environment: *app-env
         volumes:
             - vetmoment_storage:/var/www/html/storage
+        # Вместо проверки /up из образа: воркер жив, если запущен queue:work
         healthcheck:
-            disable: true
+            test: ["CMD-SHELL", "grep -qa 'queue:work' /proc/1/cmdline"]
+            interval: 10s
+            timeout: 5s
+            start_period: 30s
+            retries: 3
         depends_on:
             app:
                 condition: service_healthy
