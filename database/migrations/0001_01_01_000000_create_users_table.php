@@ -13,9 +13,17 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('login')->unique();
-            $table->string('phone')->unique();
+            $table->string('login', 32)->unique();
+            $table->string('name', 100);
+            // Казахстанский мобильный в E.164: +77XXXXXXXXX (App\Support\Phone)
+            $table->string('phone', 16)->unique();
+            $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('role', 20)->default('volunteer')->index(); // App\Enums\Role
+            $table->string('avatar_path')->nullable();
+            $table->boolean('is_blocked')->default(false);
+            $table->unsignedSmallInteger('birth_year')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

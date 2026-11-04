@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\User;
 use App\Support\Phone;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class DatabaseSetupTest extends TestCase
@@ -21,8 +22,10 @@ class DatabaseSetupTest extends TestCase
 
     public function test_seed_if_empty_seeds_only_once(): void
     {
+        Storage::fake('public');
+
         $this->artisan('app:seed-if-empty')->assertSuccessful();
-        $this->assertDatabaseHas('users', ['login' => 'demo']);
+        $this->assertDatabaseHas('users', ['login' => 'admin']);
         $count = User::count();
 
         $this->artisan('app:seed-if-empty')
