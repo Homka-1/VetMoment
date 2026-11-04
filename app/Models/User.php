@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\Role;
+use App\Enums\ShelterMemberRole;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -108,5 +109,32 @@ class User extends Authenticatable
     public function isShelterStaff(): bool
     {
         return $this->role === Role::ShelterStaff;
+    }
+
+    /** Сотрудник (любой роли внутри) именно этого приюта. */
+    public function worksAt(int|Shelter|null $shelter): bool
+    {
+        $shelterId = $shelter instanceof Shelter ? $shelter->getKey() : $shelter;
+
+        return $shelterId !== null
+            && $this->isShelterStaff()
+            && $this->shelter()?->getKey() === $shelterId;
+    }
+
+    /** Владелец этого приюта (управляет профилем и сотрудниками). */
+    public function ownsShelter(Shelter $shelter): bool
+    {
+        return $this->worksAt($shelter)
+            && $this->shelter()?->pivot?->role === ShelterMemberRole::Owner;
+    }
+
+    /** Имя маршрута «домой» после входа — кабинет по роли. */
+    public function homeRoute(): string
+    {
+        return match ($this->role) {
+            Role::Admin => 'admin.dashboard',
+            Role::ShelterStaff => 'shelter.dashboard',
+            Role::Volunteer => 'cabinet.dashboard',
+        };
     }
 }
