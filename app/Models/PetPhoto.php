@@ -11,8 +11,9 @@ use Illuminate\Support\Facades\Storage;
 
 /**
  * Фото питомца. Файл — на диске `public`; ровно одна обложка (is_cover) на питомца.
+ * `path` — до 1600 px по длинной стороне, `thumb_path` — превью 600 px (может быть пустым).
  */
-#[Fillable(['pet_id', 'path', 'sort', 'is_cover'])]
+#[Fillable(['pet_id', 'path', 'thumb_path', 'sort', 'is_cover'])]
 class PetPhoto extends Model
 {
     /** @use HasFactory<PetPhotoFactory> */
@@ -40,5 +41,17 @@ class PetPhoto extends Model
     public function url(): string
     {
         return Storage::disk('public')->url($this->path);
+    }
+
+    /** Превью для карточек и миниатюр; без превью — основной файл. */
+    public function thumbUrl(): string
+    {
+        return Storage::disk('public')->url($this->thumb_path ?? $this->path);
+    }
+
+    /** Удаляет файлы фото с диска (запись удаляется отдельно). */
+    public function deleteFiles(): void
+    {
+        Storage::disk('public')->delete(array_filter([$this->path, $this->thumb_path]));
     }
 }

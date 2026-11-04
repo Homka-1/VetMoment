@@ -161,6 +161,7 @@
     --spacing-header: 64px;
     --spacing-header-lg: 76px;
     --spacing-sidebar: 256px;
+    --spacing-filters: 296px;
 
     /* Брейкпоинты совпадают с tokens.json: 640 / 768 / 1024 / 1280 / 1536 (по умолчанию Tailwind) */
 

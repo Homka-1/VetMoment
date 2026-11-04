@@ -27,19 +27,22 @@ RUN npm run build
 # --- 3. Приложение: PHP 8.4 + Apache ----------------------------------------------
 FROM php:8.4-apache AS app
 
+# GD (jpeg, webp) — ресайз фото питомцев до 1600 px и превью 600 px (App\Services\PetPhotoStorage)
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends libpq-dev libzip-dev unzip \
-    && docker-php-ext-install pdo_pgsql zip \
+    && apt-get install -y --no-install-recommends libpq-dev libzip-dev unzip libjpeg62-turbo-dev libpng-dev libwebp-dev \
+    && docker-php-ext-configure gd --with-jpeg --with-webp \
+    && docker-php-ext-install pdo_pgsql zip gd exif \
     && apt-get purge -y --auto-remove \
     && rm -rf /var/lib/apt/lists/*
 
+# До 10 фото по 8 МБ в одной анкете → post_max_size 100M; память — на декодирование крупных фото в GD
 RUN a2enmod rewrite headers \
     && sed -ri -e 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/*.conf \
     && sed -ri -e 's!/var/www/!/var/www/html/public!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf \
     && echo 'ServerName localhost' > /etc/apache2/conf-available/servername.conf \
     && a2enconf servername \
     && cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
-    && printf 'upload_max_filesize=10M\npost_max_size=12M\nmemory_limit=256M\nexpose_php=Off\n' \
+    && printf 'upload_max_filesize=10M\npost_max_size=100M\nmax_file_uploads=20\nmemory_limit=384M\nexpose_php=Off\n' \
         > "$PHP_INI_DIR/conf.d/vetmoment.ini"
 
 # Composer нужен в режиме разработки (docker-compose.dev.yml ставит dev-зависимости)

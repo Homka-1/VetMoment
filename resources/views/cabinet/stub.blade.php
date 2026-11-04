@@ -2,21 +2,7 @@
 <x-layouts.cabinet :title="$title">
     <div class="grid gap-6">
         @isset($shelter)
-            @if ($shelter->status === \App\Enums\ShelterStatus::Pending)
-                <x-alert tone="warning" title="Приют «{{ $shelter->name }}» на модерации">
-                    Можно готовить черновики анкет и сборов — опубликовать их получится после проверки.
-                    Обычно она занимает 1–2 рабочих дня.
-                </x-alert>
-            @elseif ($shelter->status === \App\Enums\ShelterStatus::Rejected)
-                <x-alert tone="danger" title="Заявка приюта отклонена">
-                    <p>{{ $shelter->moderation_comment }}</p>
-                    <x-slot:action>
-                        <x-button variant="secondary" size="sm" :href="route('cabinet.shelter-request')">Исправить заявку</x-button>
-                    </x-slot:action>
-                </x-alert>
-            @elseif ($shelter->status === \App\Enums\ShelterStatus::Blocked)
-                <x-alert tone="danger" title="Приют заблокирован">{{ $shelter->moderation_comment }}</x-alert>
-            @endif
+            <x-shelter-moderation :shelter="$shelter" />
         @endisset
 
         <x-card padding="lg" class="flex flex-col gap-6 md:flex-row md:items-center">

@@ -1,7 +1,7 @@
 @props(['caption' => null])
 {{-- Таблица кабинетов (макеты этапа 3): шапка 44, строки 68–80, граница subtle, прокрутка по горизонтали на узких экранах.
      Слот head — строки <tr> шапки, основной слот — строки <tr> тела. Ячейки: x-table.th / обычные <td class="…">. --}}
-<div {{ $attributes->class('overflow-x-auto rounded-lg border border-subtle bg-raised') }}>
+<div {{ $attributes->class('relative overflow-x-auto rounded-lg border border-subtle bg-raised') }}>
     <table class="w-full border-collapse text-left text-sm">
         @if ($caption)
             <caption class="sr-only">{{ $caption }}</caption>

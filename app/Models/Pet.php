@@ -50,6 +50,15 @@ class Pet extends Model
         'leash_trained' => 'Ходит на поводке',
     ];
 
+    /** Подписи черт, когда флажок не отмечен, — для списка «Характер» на карточке. */
+    public const TRAITS_NEGATIVE = [
+        'good_with_kids' => 'С детьми — осторожно',
+        'good_with_cats' => 'С кошками — осторожно',
+        'good_with_dogs' => 'С другими собаками — осторожно',
+        'house_trained' => 'Пока учится порядку в доме',
+        'leash_trained' => 'Учится ходить на поводке',
+    ];
+
     /** @var array<string, mixed> */
     protected $attributes = [
         'status' => 'draft',
@@ -200,6 +209,65 @@ class Pet extends Model
     public function traitLabels(): array
     {
         return array_filter(self::TRAITS, fn (string $label, string $key): bool => (bool) $this->{$key}, ARRAY_FILTER_USE_BOTH);
+    }
+
+    /**
+     * Все черты для карточки: подпись и есть ли черта.
+     *
+     * @return list<array{label: string, value: bool}>
+     */
+    public function characterList(): array
+    {
+        $list = [];
+
+        foreach (self::TRAITS as $key => $label) {
+            $list[] = ['label' => $this->{$key} ? $label : self::TRAITS_NEGATIVE[$key], 'value' => (bool) $this->{$key}];
+        }
+
+        return $list;
+    }
+
+    /**
+     * Здоровье для карточки: иконка, подпись, отмечено ли.
+     *
+     * @return list<array{icon: string, label: string, value: bool}>
+     */
+    public function healthList(): array
+    {
+        $sterilized = match ($this->sex) {
+            Sex::Male => ['Кастрирован', 'Не кастрирован'],
+            Sex::Female => ['Стерилизована', 'Не стерилизована'],
+            default => ['Стерилизован', 'Не стерилизован'],
+        };
+
+        return [
+            ['icon' => 'syringe', 'label' => $this->vaccinated ? 'Привит' : 'Ещё не привит', 'value' => (bool) $this->vaccinated],
+            ['icon' => 'shield-check', 'label' => $sterilized[$this->sterilized ? 0 : 1], 'value' => (bool) $this->sterilized],
+            ['icon' => 'tag', 'label' => $this->chipped ? 'Чипирован' : 'Без чипа', 'value' => (bool) $this->chipped],
+        ];
+    }
+
+    /** «Собака, 2 года, мальчик, средний» — подзаголовок карточки питомца. */
+    public function fullSummary(): string
+    {
+        $age = $this->ageLabel();
+        if ($age !== null && $this->birth_date_is_approx) {
+            $age = '≈ '.$age;
+        }
+
+        $parts = [$this->species->label(), $age];
+        if ($this->sex !== Sex::Unknown) {
+            $parts[] = mb_strtolower($this->sex->label());
+        }
+        $parts[] = mb_strtolower($this->size->label());
+
+        return implode(', ', array_filter($parts));
+    }
+
+    /** Подпись фото по умолчанию (data-requirements, доступность): «Бублик — собака, фото 2». */
+    public function photoAlt(int $position): string
+    {
+        return "{$this->name} — ".mb_strtolower($this->species->label()).", фото {$position}";
     }
 
     /** С питомцем можно записаться на выгул (правило W8). */

@@ -5,6 +5,9 @@ import { initToasts, showToast } from './ui/toasts';
 import { initForms } from './ui/forms';
 import { initGallery } from './ui/gallery';
 import { initDayPicker } from './ui/day-picker';
+import { initAutosubmit } from './ui/autosubmit';
+import { initShare } from './ui/share';
+import { initPhotoManager } from './ui/photo-manager';
 
 function init(root = document) {
     initDialogs(root);
@@ -12,6 +15,9 @@ function init(root = document) {
     initForms(root);
     initGallery(root);
     initDayPicker(root);
+    initAutosubmit(root);
+    initShare(root);
+    initPhotoManager(root);
 }
 
 if (document.readyState === 'loading') {

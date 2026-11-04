@@ -5,12 +5,14 @@
     'favorited' => false,
     'favoriteUrl' => null,
     'compact' => false,
+    'responsive' => false,
     'headingLevel' => 3,
 ])
 @php
     // Карточка питомца (UI-кит, артборд 04): фото со статусом и «в избранное», кличка, возраст и пол,
     // до трёх черт характера, приют и готовность к выгулу. Вся карточка — одна ссылка (растянутая).
-    $image ??= $pet->relationLoaded('cover') && $pet->cover ? $pet->cover->url() : null;
+    // responsive — на телефоне компактная (макет 02-mobile: без черт и приюта), с lg — полная.
+    $image ??= $pet->relationLoaded('cover') && $pet->cover ? $pet->cover->thumbUrl() : null;
     $traits = array_slice(array_values($pet->traitLabels()), 0, $compact ? 2 : 3);
     $shelter = $pet->relationLoaded('shelter') ? $pet->shelter : null;
     $href ??= \Illuminate\Support\Facades\Route::has('pets.show') ? route('pets.show', $pet) : '#';
@@ -39,14 +41,14 @@
         @endif
     </div>
 
-    <div @class(['flex flex-1 flex-col px-3 pt-4', $compact ? 'pb-3' : 'pb-4'])>
+    <div @class(['flex flex-1 flex-col pt-4', $compact ? 'pb-3' : 'pb-4', $responsive ? 'px-2 lg:px-3' : 'px-3'])>
         <h{{ $headingLevel }} class="font-display text-lg leading-snug font-semibold tracking-display">
             <a href="{{ $href }}" class="rounded-xs after:absolute after:inset-0 after:rounded-lg focus-visible:outline-none focus-visible:after:outline-3 focus-visible:after:outline-offset-2 focus-visible:after:outline-focus">{{ $pet->name }}</a>
         </h{{ $headingLevel }}>
         <p class="mt-1 text-sm text-secondary">{{ $pet->summary() }}</p>
 
         @if ($traits)
-            <ul class="mt-3 flex flex-wrap gap-1.5" aria-label="Характер">
+            <ul @class(['mt-3 flex-wrap gap-1.5', 'hidden lg:flex' => $responsive, 'flex' => ! $responsive]) aria-label="Характер">
                 @foreach ($traits as $trait)
                     <li class="rounded-pill bg-ink-100 px-2.5 py-1 text-xs font-medium text-secondary">{{ mb_strtolower($trait) }}</li>
                 @endforeach
@@ -55,9 +57,9 @@
 
         @unless ($compact)
             <div class="min-h-4 grow"></div>
-            <div class="grid gap-1.5 border-t border-subtle pt-3 text-sm">
+            <div @class(['grid gap-1.5 text-sm', 'pt-1 lg:border-t lg:border-subtle lg:pt-3' => $responsive, 'border-t border-subtle pt-3' => ! $responsive])>
                 @if ($shelter)
-                    <p class="flex items-center gap-2 text-secondary">
+                    <p @class(['items-center gap-2 text-secondary', 'hidden lg:flex' => $responsive, 'flex' => ! $responsive])>
                         <x-icon name="home" size="sm" />{{ $shelter->name }}, {{ $shelter->city }}
                     </p>
                 @endif
