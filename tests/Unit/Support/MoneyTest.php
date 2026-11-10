@@ -41,4 +41,14 @@ class MoneyTest extends TestCase
         $this->assertSame(1_000_50, Money::fromTenge('1000,5'));
         $this->assertSame(200_00, Money::fromTenge(200));
     }
+
+    public function test_compact_keeps_small_sums_and_shortens_millions(): void
+    {
+        $nbsp = "\u{00A0}";
+
+        $this->assertSame("730{$nbsp}500{$nbsp}₸", Money::compact(730_500_00));
+        $this->assertSame("2,1{$nbsp}млн{$nbsp}₸", Money::compact(2_100_000_00));
+        $this->assertSame("2{$nbsp}млн{$nbsp}₸", Money::compact(2_000_000_00));
+        $this->assertSame("18,4{$nbsp}млн{$nbsp}₸", Money::compact(18_430_000_00));
+    }
 }

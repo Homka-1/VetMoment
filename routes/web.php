@@ -1,27 +1,39 @@
 <?php
 
+use App\Http\Controllers\Admin\ApplicationController as AdminApplicationController;
+use App\Http\Controllers\Admin\CampaignController as AdminCampaignController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\PetController as AdminPetController;
+use App\Http\Controllers\Admin\ShelterController as AdminShelterController;
 use App\Http\Controllers\Admin\ShelterModerationController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Cabinet\ApplicationController as CabinetApplicationController;
+use App\Http\Controllers\Cabinet\DashboardController as CabinetDashboardController;
 use App\Http\Controllers\Cabinet\DonationController as CabinetDonationController;
 use App\Http\Controllers\Cabinet\FavoriteController as CabinetFavoriteController;
+use App\Http\Controllers\Cabinet\ProfileController as CabinetProfileController;
 use App\Http\Controllers\Cabinet\ShelterApplicationController;
 use App\Http\Controllers\Cabinet\WalkController as CabinetWalkController;
-use App\Http\Controllers\CabinetStubController;
 use App\Http\Controllers\Campaigns\CampaignController;
 use App\Http\Controllers\Donations\DonationController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Payments\FakePaymentController;
 use App\Http\Controllers\Payments\WebhookController;
 use App\Http\Controllers\Pets\AdoptionApplicationController;
 use App\Http\Controllers\Pets\FavoriteController;
 use App\Http\Controllers\Pets\PetController;
+use App\Http\Controllers\Public\ShelterController as PublicShelterController;
 use App\Http\Controllers\Shelter\ApplicationController as ShelterApplicationsController;
 use App\Http\Controllers\Shelter\CampaignController as ShelterCampaignController;
 use App\Http\Controllers\Shelter\CampaignReportController;
+use App\Http\Controllers\Shelter\DashboardController as ShelterDashboardController;
 use App\Http\Controllers\Shelter\DonationController as ShelterDonationController;
 use App\Http\Controllers\Shelter\PetController as ShelterPetController;
+use App\Http\Controllers\Shelter\ProfileController as ShelterProfileController;
 use App\Http\Controllers\Shelter\WalkBookingController as ShelterWalkBookingController;
 use App\Http\Controllers\Shelter\WalkSlotController as ShelterWalkSlotController;
 use App\Http\Controllers\Shelter\WalkTemplateController;
@@ -30,8 +42,16 @@ use App\Http\Controllers\Walks\BookingController as WalkBookingController;
 use App\Http\Controllers\Walks\WalkController;
 use Illuminate\Support\Facades\Route;
 
-// Главная: на этапе 7 — статичные блоки (герой, три пути помощи), блоки с данными — после этапов 8–10.
-Route::view('/', 'home')->name('home');
+// Главная: герой, три пути помощи и блоки с данными.
+Route::get('/', HomeController::class)->name('home');
+
+// Информационные страницы.
+Route::view('/help', 'help')->name('help');
+Route::view('/privacy', 'privacy')->name('privacy');
+
+// Приюты: список и страница приюта.
+Route::get('/shelters', [PublicShelterController::class, 'index'])->name('shelters.index');
+Route::get('/shelters/{shelter}', [PublicShelterController::class, 'show'])->name('shelters.show');
 
 // Витрина UI-кита — только local/testing (в production контроллер отдаёт 404).
 Route::get('/styleguide', StyleguideController::class)->name('styleguide');
@@ -102,7 +122,11 @@ Route::post('/logout', [LoginController::class, 'destroy'])->middleware('auth')-
 
 // --- Кабинет волонтёра (доступен всем вошедшим: права приюта ⊇ волонтёра) ----------------------
 Route::middleware('auth')->prefix('cabinet')->name('cabinet.')->group(function () {
-    Route::get('/', [CabinetStubController::class, 'volunteer'])->name('dashboard');
+    Route::get('/', CabinetDashboardController::class)->name('dashboard');
+    Route::get('/applications', [CabinetApplicationController::class, 'index'])->name('applications');
+    Route::get('/profile', [CabinetProfileController::class, 'edit'])->name('profile');
+    Route::patch('/profile', [CabinetProfileController::class, 'update'])->middleware('throttle:forms')->name('profile.update');
+    Route::put('/profile/password', [CabinetProfileController::class, 'password'])->middleware('throttle:forms')->name('profile.password');
     Route::get('/favorites', [CabinetFavoriteController::class, 'index'])->name('favorites');
     Route::get('/donations', [CabinetDonationController::class, 'index'])->name('donations');
     Route::get('/walks', [CabinetWalkController::class, 'index'])->name('walks');
@@ -114,7 +138,9 @@ Route::middleware('auth')->prefix('cabinet')->name('cabinet.')->group(function (
 
 // --- Кабинет приюта ---------------------------------------------------------------------------
 Route::middleware('role:shelter_staff')->prefix('shelter')->name('shelter.')->group(function () {
-    Route::get('/', [CabinetStubController::class, 'shelter'])->name('dashboard');
+    Route::get('/', ShelterDashboardController::class)->name('dashboard');
+    Route::get('/profile', [ShelterProfileController::class, 'edit'])->name('profile');
+    Route::patch('/profile', [ShelterProfileController::class, 'update'])->middleware('throttle:forms')->name('profile.update');
 
     Route::resource('pets', ShelterPetController::class)->except('show');
 
@@ -146,7 +172,22 @@ Route::middleware('role:shelter_staff')->prefix('shelter')->name('shelter.')->gr
 
 // --- Админка ----------------------------------------------------------------------------------
 Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/', [CabinetStubController::class, 'admin'])->name('dashboard');
+    Route::get('/', AdminDashboardController::class)->name('dashboard');
+    Route::get('/shelters', [AdminShelterController::class, 'index'])->name('shelters.index');
+
+    Route::get('/pets', [AdminPetController::class, 'index'])->name('pets.index');
+    Route::post('/pets/{pet}/hide', [AdminPetController::class, 'hide'])->name('pets.hide');
+    Route::post('/pets/{pet}/restore', [AdminPetController::class, 'restore'])->name('pets.restore');
+
+    Route::get('/campaigns', [AdminCampaignController::class, 'index'])->name('campaigns.index');
+    Route::post('/campaigns/{campaign}/hide', [AdminCampaignController::class, 'hide'])->name('campaigns.hide');
+    Route::post('/campaigns/{campaign}/restore', [AdminCampaignController::class, 'restore'])->name('campaigns.restore');
+
+    Route::get('/applications', [AdminApplicationController::class, 'index'])->name('applications.index');
+
+    Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+    Route::post('/users/{user}/block', [AdminUserController::class, 'block'])->name('users.block');
+    Route::post('/users/{user}/unblock', [AdminUserController::class, 'unblock'])->name('users.unblock');
 
     Route::controller(ShelterModerationController::class)->prefix('shelters/{shelter}')->name('shelters.')
         ->group(function () {

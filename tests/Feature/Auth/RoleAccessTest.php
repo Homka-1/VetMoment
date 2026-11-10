@@ -25,7 +25,7 @@ class RoleAccessTest extends TestCase
     {
         $this->actingAs($this->volunteer());
 
-        $this->get('/cabinet')->assertOk()->assertSee('Кабинет волонтёра');
+        $this->get('/cabinet')->assertOk()->assertSee('Здравствуйте');
         $this->get('/shelter')->assertForbidden();
         $this->get('/admin')->assertForbidden();
     }
@@ -44,7 +44,7 @@ class RoleAccessTest extends TestCase
     {
         $this->actingAs($this->admin());
 
-        $this->get('/admin')->assertOk()->assertSee('Админка');
+        $this->get('/admin')->assertOk()->assertSee('Статистика');
         $this->get('/cabinet')->assertOk();
         $this->get('/shelter')->assertForbidden();
     }

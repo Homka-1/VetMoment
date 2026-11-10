@@ -6,12 +6,14 @@ use App\Models\AdoptionApplication;
 use App\Models\DonationCampaign;
 use App\Models\Pet;
 use App\Models\Shelter;
+use App\Models\User;
 use App\Models\WalkBooking;
 use App\Models\WalkSlot;
 use App\Policies\AdoptionApplicationPolicy;
 use App\Policies\CampaignPolicy;
 use App\Policies\PetPolicy;
 use App\Policies\ShelterPolicy;
+use App\Policies\UserPolicy;
 use App\Policies\WalkBookingPolicy;
 use App\Policies\WalkSlotPolicy;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -57,6 +59,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(WalkBooking::class, WalkBookingPolicy::class);
         Gate::policy(AdoptionApplication::class, AdoptionApplicationPolicy::class);
         Gate::policy(Shelter::class, ShelterPolicy::class);
+        Gate::policy(User::class, UserPolicy::class);
     }
 
     /**

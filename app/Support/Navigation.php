@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use App\Enums\Role;
+use App\Models\Shelter;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
@@ -45,9 +46,13 @@ final class Navigation
     {
         $items = match ($user->role) {
             Role::Admin => [
-                ['Обзор', 'admin.dashboard', 'home', 'admin'],
+                ['Статистика', 'admin.dashboard', 'home', 'admin'],
                 ['Приюты', 'admin.shelters.index', 'shield-check', 'admin/shelters*'],
+                ['Анкеты', 'admin.pets.index', 'paw', 'admin/pets*'],
+                ['Сборы', 'admin.campaigns.index', 'tenge', 'admin/campaigns*'],
+                ['Заявки', 'admin.applications.index', 'mail', 'admin/applications*'],
                 ['Пользователи', 'admin.users.index', 'users', 'admin/users*'],
+                ['Мой профиль', 'cabinet.profile', 'user', 'cabinet/profile*'],
             ],
             Role::ShelterStaff => [
                 ['Сводка', 'shelter.dashboard', 'home', 'shelter'],
@@ -58,12 +63,13 @@ final class Navigation
                 ['Слоты выгула', 'shelter.slots.index', 'calendar', 'shelter/slots*'],
                 ['Записи на выгул', 'shelter.bookings.index', 'leash', 'shelter/bookings*'],
                 ['Профиль приюта', 'shelter.profile', 'edit', 'shelter/profile*'],
+                ['Мой профиль', 'cabinet.profile', 'user', 'cabinet/profile*'],
             ],
             Role::Volunteer => [
                 ['Обзор', 'cabinet.dashboard', 'home', 'cabinet'],
                 ['Мои выгулы', 'cabinet.walks', 'leash', 'cabinet/walks*'],
                 ['Мои заявки', 'cabinet.applications', 'mail', 'cabinet/applications*'],
-                ['Пожертвования', 'cabinet.donations', 'tenge', 'cabinet/donations*'],
+                ['Мои пожертвования', 'cabinet.donations', 'tenge', 'cabinet/donations*'],
                 ['Избранное', 'cabinet.favorites', 'heart', 'cabinet/favorites*'],
                 ['Профиль', 'cabinet.profile', 'user', 'cabinet/profile*'],
             ],
@@ -71,7 +77,16 @@ final class Navigation
 
         $result = [];
 
+        if ($user->role === Role::Volunteer && $user->can('register', Shelter::class)) {
+            $items[] = ['Стать приютом', 'cabinet.shelter-request', 'plus', 'cabinet/shelter-request*'];
+        }
+
         foreach ($items as [$label, $route, $icon, $pattern]) {
+            // Профиль приюта меняет только владелец (ShelterPolicy::update).
+            if ($route === 'shelter.profile' && ! $user->ownsShelter($user->shelter() ?? new Shelter)) {
+                continue;
+            }
+
             if (Route::has($route)) {
                 $result[] = ['label' => $label, 'href' => route($route), 'icon' => $icon, 'active' => request()->is($pattern)];
             }

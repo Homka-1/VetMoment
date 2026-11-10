@@ -34,4 +34,19 @@ final class Money
     {
         return (int) round(((float) str_replace([' ', self::NBSP, ','], ['', '', '.'], (string) $tenge)) * 100);
     }
+
+    /** Короткая запись для крупных цифр: «2,1 млн ₸», «730 500 ₸» (до миллиона — полностью). */
+    public static function compact(int $tiyn): string
+    {
+        $tenge = intdiv(abs($tiyn), 100);
+
+        if ($tenge < 1_000_000) {
+            return self::format($tiyn);
+        }
+
+        $millions = number_format($tenge / 1_000_000, 1, ',', '');
+        $millions = str_ends_with($millions, ',0') ? substr($millions, 0, -2) : $millions;
+
+        return ($tiyn < 0 ? '−' : '').$millions.self::NBSP.'млн'.self::NBSP.self::SIGN;
+    }
 }

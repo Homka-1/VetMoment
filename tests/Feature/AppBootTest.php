@@ -2,10 +2,13 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class AppBootTest extends TestCase
 {
+    use RefreshDatabase; // главная читает данные из БД
+
     public function test_home_page_is_available(): void
     {
         $this->get('/')
