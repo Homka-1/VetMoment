@@ -5,13 +5,21 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Cabinet\DonationController as CabinetDonationController;
 use App\Http\Controllers\Cabinet\FavoriteController as CabinetFavoriteController;
 use App\Http\Controllers\Cabinet\ShelterApplicationController;
 use App\Http\Controllers\CabinetStubController;
+use App\Http\Controllers\Campaigns\CampaignController;
+use App\Http\Controllers\Donations\DonationController;
+use App\Http\Controllers\Payments\FakePaymentController;
+use App\Http\Controllers\Payments\WebhookController;
 use App\Http\Controllers\Pets\AdoptionApplicationController;
 use App\Http\Controllers\Pets\FavoriteController;
 use App\Http\Controllers\Pets\PetController;
 use App\Http\Controllers\Shelter\ApplicationController as ShelterApplicationsController;
+use App\Http\Controllers\Shelter\CampaignController as ShelterCampaignController;
+use App\Http\Controllers\Shelter\CampaignReportController;
+use App\Http\Controllers\Shelter\DonationController as ShelterDonationController;
 use App\Http\Controllers\Shelter\PetController as ShelterPetController;
 use App\Http\Controllers\StyleguideController;
 use Illuminate\Support\Facades\Route;
@@ -34,6 +42,25 @@ Route::middleware('auth')->group(function () {
         ->name('applications.withdraw');
     Route::post('/pets/{pet}/favorite', [FavoriteController::class, 'toggle'])->name('pets.favorite');
 });
+
+// --- Сборы и пожертвования ----------------------------------------------------------------------
+Route::get('/campaigns', [CampaignController::class, 'index'])->name('campaigns.index');
+Route::get('/campaigns/{campaign}', [CampaignController::class, 'show'])->name('campaigns.show');
+Route::get('/campaigns/{campaign}/donations', [CampaignController::class, 'donations'])->name('campaigns.donations');
+
+Route::controller(DonationController::class)->group(function () {
+    Route::get('/campaigns/{campaign}/donate', 'campaignForm')->name('campaigns.donate');
+    Route::post('/campaigns/{campaign}/donate', 'storeForCampaign')->middleware('throttle:forms')->name('campaigns.donate.store');
+    Route::get('/shelters/{shelter}/donate', 'shelterForm')->name('shelters.donate');
+    Route::post('/shelters/{shelter}/donate', 'storeForShelter')->middleware('throttle:forms')->name('shelters.donate.store');
+    Route::get('/donate', 'chooseFund')->name('donate.fund');
+    Route::get('/donations/{donation}', 'show')->name('donations.show');
+});
+
+// Платёжный слой: демо-«банк» FakePaymentGateway и webhook провайдеров (без CSRF — см. bootstrap/app.php).
+Route::get('/payments/fake/{donation}', [FakePaymentController::class, 'show'])->name('payments.fake.show');
+Route::post('/payments/fake/{donation}', [FakePaymentController::class, 'pay'])->middleware('throttle:forms')->name('payments.fake.pay');
+Route::post('/payments/webhook/{provider}', WebhookController::class)->name('payments.webhook');
 
 // --- Аутентификация -------------------------------------------------------------------------
 Route::middleware('guest')->group(function () {
@@ -58,6 +85,7 @@ Route::post('/logout', [LoginController::class, 'destroy'])->middleware('auth')-
 Route::middleware('auth')->prefix('cabinet')->name('cabinet.')->group(function () {
     Route::get('/', [CabinetStubController::class, 'volunteer'])->name('dashboard');
     Route::get('/favorites', [CabinetFavoriteController::class, 'index'])->name('favorites');
+    Route::get('/donations', [CabinetDonationController::class, 'index'])->name('donations');
 
     Route::get('/shelter-request', [ShelterApplicationController::class, 'create'])->name('shelter-request');
     Route::post('/shelter-request', [ShelterApplicationController::class, 'store'])
@@ -73,6 +101,15 @@ Route::middleware('role:shelter_staff')->prefix('shelter')->name('shelter.')->gr
     Route::get('/applications', [ShelterApplicationsController::class, 'index'])->name('applications.index');
     Route::get('/applications/{application}', [ShelterApplicationsController::class, 'show'])->name('applications.show');
     Route::patch('/applications/{application}', [ShelterApplicationsController::class, 'update'])->name('applications.update');
+
+    Route::resource('campaigns', ShelterCampaignController::class)->except('show');
+    Route::post('/campaigns/{campaign}/close', [ShelterCampaignController::class, 'close'])->name('campaigns.close');
+    Route::get('/campaigns/{campaign}/reports', [CampaignReportController::class, 'index'])->name('campaigns.reports.index');
+    Route::post('/campaigns/{campaign}/reports', [CampaignReportController::class, 'store'])->name('campaigns.reports.store');
+    Route::delete('/campaigns/{campaign}/reports/{report}', [CampaignReportController::class, 'destroy'])->name('campaigns.reports.destroy');
+
+    Route::get('/donations', [ShelterDonationController::class, 'index'])->name('donations.index');
+    Route::get('/donations/export', [ShelterDonationController::class, 'export'])->name('donations.export');
 });
 
 // --- Админка ----------------------------------------------------------------------------------

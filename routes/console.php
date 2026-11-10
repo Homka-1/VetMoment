@@ -1,5 +1,6 @@
 <?php
 
+use App\Services\DonationPayments;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -47,3 +48,15 @@ Artisan::command('app:seed-if-empty', function () {
 
     return $this->call('db:seed', ['--force' => true]);
 })->purpose('Заполнить базу демо-данными, если она пустая');
+
+/*
+| Пожертвования (этап 9). Запуск по расписанию подключается на этапе 12 (планировщик в Docker).
+*/
+
+Artisan::command('app:expire-pending-donations', function (DonationPayments $payments) {
+    $this->info('Помечено «Срок оплаты истёк»: '.$payments->expireStale());
+})->purpose('Пометить неоплаченные пожертвования старше PAYMENT_PENDING_TTL минут как истёкшие');
+
+Artisan::command('app:close-expired-campaigns', function (DonationPayments $payments) {
+    $this->info('Закрыто сборов с истёкшим сроком: '.$payments->closeExpiredCampaigns());
+})->purpose('Закрыть идущие сборы, у которых прошла дата окончания');

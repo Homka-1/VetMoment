@@ -66,10 +66,13 @@ class CampaignPolicy
         return $this->manages($user, $campaign);
     }
 
-    /** Пожертвовать может любой, в т.ч. гость, — пока сбор идёт и виден публично. */
+    /**
+     * Пожертвовать может любой, в т.ч. гость, — пока сбор виден публично и принимает деньги:
+     * идёт и срок не истёк, либо цель достигнута, но разрешено собирать сверх цели.
+     */
     public function donate(?User $user, DonationCampaign $campaign): bool
     {
-        return $this->isPublic($campaign) && $campaign->status === CampaignStatus::Active;
+        return $this->isPublic($campaign) && $campaign->acceptsDonations();
     }
 
     private function manages(User $user, DonationCampaign $campaign): bool

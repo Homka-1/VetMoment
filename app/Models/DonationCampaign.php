@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Сбор пожертвований. Суммы — в тиынах (1 ₸ = 100 тиын).
@@ -125,6 +126,97 @@ class DonationCampaign extends Model
             'raised_amount' => (int) $totals->total,
             'donations_count' => (int) $totals->cnt,
         ])->save();
+    }
+
+    /** Цель достигнута (сумма не меньше цели). */
+    public function isGoalReached(): bool
+    {
+        return $this->goal_amount > 0 && $this->raised_amount >= $this->goal_amount;
+    }
+
+    /** Срок сбора истёк (бессрочный сбор не истекает). */
+    public function isExpired(): bool
+    {
+        return $this->ends_at !== null && $this->ends_at->isPast();
+    }
+
+    /**
+     * Принимает ли сбор пожертвования: идёт и срок не истёк, либо цель достигнута,
+     * но приют разрешил собирать сверх цели — до даты окончания (user-flows, 2, п. 8).
+     */
+    public function acceptsDonations(): bool
+    {
+        if ($this->isExpired()) {
+            return false;
+        }
+
+        return match ($this->status) {
+            CampaignStatus::Active => true,
+            CampaignStatus::Completed => $this->allow_overfunding,
+            default => false,
+        };
+    }
+
+    /** Сколько дней осталось (вверх: «ещё 1 день» до конца завтрашнего дня); null — бессрочный или истёк. */
+    public function daysLeft(): ?int
+    {
+        if ($this->ends_at === null || $this->ends_at->isPast()) {
+            return null;
+        }
+
+        return max(1, (int) ceil(now()->diffInDays($this->ends_at)));
+    }
+
+    /**
+     * Сбор достиг цели → «Цель достигнута». Вызывать после recalculateTotals() в той же транзакции.
+     */
+    public function syncCompletion(): void
+    {
+        if ($this->status === CampaignStatus::Active && $this->isGoalReached()) {
+            $this->forceFill(['status' => CampaignStatus::Completed, 'completed_at' => now()])->save();
+        }
+    }
+
+    /** Обложка: своя картинка сбора, иначе обложка анкеты питомца (если связь загружена). */
+    public function coverUrl(): ?string
+    {
+        if ($this->cover_path) {
+            return Storage::disk('public')->url($this->cover_path);
+        }
+
+        if ($this->pet_id && $this->relationLoaded('pet') && $this->pet?->relationLoaded('cover') && $this->pet->cover) {
+            return $this->pet->cover->thumbUrl();
+        }
+
+        return null;
+    }
+
+    /**
+     * Иллюстрация-заглушка без обложки (стабильно по id): файл из public/images/illustrations и фон.
+     *
+     * @return array{src: string, bg: string}
+     */
+    public function illustration(): array
+    {
+        $options = [
+            ['dog-caramel', 'bg-tag-100'],
+            ['dog-graphite', 'bg-sky-100'],
+            ['cat-smoke', 'bg-meadow-100'],
+            ['cat-ginger', 'bg-meadow-100'],
+        ];
+        [$file, $bg] = $options[((int) $this->id) % count($options)];
+
+        return ['src' => asset("images/illustrations/{$file}.svg"), 'bg' => $bg];
+    }
+
+    /** Принимают пожертвования (то же правило, что acceptsDonations(), — в SQL). */
+    #[Scope]
+    protected function acceptingDonations(Builder $query): void
+    {
+        $query->where(fn (Builder $q) => $q
+            ->where('status', CampaignStatus::Active)
+            ->orWhere(fn (Builder $c) => $c->where('status', CampaignStatus::Completed)->where('allow_overfunding', true)))
+            ->where(fn (Builder $q) => $q->whereNull('ends_at')->orWhere('ends_at', '>', now()));
     }
 
     /** Видимые публично: публичный статус, не скрыт, приют одобрен. */

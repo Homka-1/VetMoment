@@ -26,7 +26,16 @@ class PetPhotoStorage
      */
     public function store(UploadedFile $file, int $petId): array
     {
-        $directory = "pets/{$petId}";
+        return $this->storeIn($file, "pets/{$petId}");
+    }
+
+    /**
+     * То же для любых картинок (обложки сборов, фото и чеки отчётов) — в указанную папку диска `public`.
+     *
+     * @return array{path: string, thumb_path: string|null}
+     */
+    public function storeIn(UploadedFile $file, string $directory): array
+    {
         $name = (string) Str::uuid();
 
         $image = $this->canResize() ? @imagecreatefromstring((string) file_get_contents($file->getRealPath())) : false;

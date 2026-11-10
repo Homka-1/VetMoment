@@ -18,7 +18,7 @@ use Illuminate\Support\Str;
  */
 #[Fillable([
     'uuid', 'campaign_id', 'shelter_id', 'user_id', 'donor_name', 'donor_email', 'is_anonymous', 'amount',
-    'comment', 'status', 'provider', 'provider_payment_id', 'idempotency_key', 'paid_at',
+    'comment', 'status', 'failure_reason', 'provider', 'provider_payment_id', 'idempotency_key', 'paid_at',
 ])]
 class Donation extends Model
 {
@@ -80,6 +80,12 @@ class Donation extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /** Куда ушли деньги: название сбора или «Общий фонд приюта …». Нужны связи campaign и shelter. */
+    public function purposeLabel(): string
+    {
+        return $this->campaign?->title ?? 'Общий фонд приюта «'.$this->shelter->name.'»';
     }
 
     /** Имя для публичного списка: «Аноним», если донор скрыл имя или не указал его. */

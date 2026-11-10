@@ -78,7 +78,7 @@ class DemoSeederTest extends TestCase
         $this->assertSame(412_500 * 100, $romashka->raised_amount);
         $this->assertSame(84, $romashka->donations_count);
         $this->assertTrue($romashka->pet->is(Pet::where('name', 'Ромашка')->first()));
-        $this->assertSame(2, DonationCampaign::has('reports')->count());
+        $this->assertSame(3, DonationCampaign::has('reports')->count());
     }
 
     public function test_walk_data_follows_booking_rules(): void

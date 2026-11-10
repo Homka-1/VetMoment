@@ -18,6 +18,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => EnsureUserHasRole::class,
         ]);
 
+        // Webhook платёжных провайдеров: подлинность проверяется подписью, а не CSRF-токеном.
+        $middleware->validateCsrfTokens(except: ['payments/webhook/*']);
+
         $middleware->web(append: [
             EnsureUserIsNotBlocked::class,
         ]);

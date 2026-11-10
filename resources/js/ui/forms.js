@@ -38,6 +38,18 @@ function initAmountPickers(root) {
                 preset.checked = preset.value === digits;
             });
         });
+
+        // Кнопка формы называет сумму: «Пожертвовать 5 000 ₸».
+        const label = picker.closest('form')?.querySelector('[data-amount-label]');
+        if (label) {
+            const update = () => {
+                const amount = Number(input.value.replace(/\D/g, ''));
+                const base = label.dataset.labelBase;
+                label.textContent = amount > 0 ? `${base} ${nf.format(amount)}\u00a0₸` : base;
+            };
+            input.addEventListener('input', update);
+            presets.forEach((preset) => preset.addEventListener('change', update));
+        }
     });
 }
 

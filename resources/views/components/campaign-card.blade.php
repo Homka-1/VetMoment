@@ -12,20 +12,24 @@
     // Карточка сбора (UI-кит, артборд 04): собранная сумма — главное число; срок и число помогших рядом.
     $shelter = $campaign->relationLoaded('shelter') ? $campaign->shelter : null;
     $href ??= \Illuminate\Support\Facades\Route::has('campaigns.show') ? route('campaigns.show', $campaign) : '#';
-    $donateHref ??= $href;
-    $done = $campaign->status === CampaignStatus::Completed || ($campaign->goal_amount > 0 && $campaign->raised_amount >= $campaign->goal_amount);
-    $active = $campaign->status === CampaignStatus::Active && ! $done;
-    $daysLeft = $campaign->ends_at && $campaign->ends_at->isFuture() ? (int) ceil(now()->diffInDays($campaign->ends_at)) : null;
+    $donateHref ??= $href === '#' ? '#' : $href.'#donate';
+    $done = $campaign->status === CampaignStatus::Completed || $campaign->isGoalReached();
+    // Сбор принимает деньги (идёт или собирает сверх цели) — жёлтая кнопка; иначе — к отчёту.
+    $accepting = $campaign->exists ? $campaign->acceptsDonations() : $campaign->status === CampaignStatus::Active;
+    $daysLeft = $campaign->daysLeft();
     $percent = $campaign->progressPercent();
+    $image ??= $campaign->coverUrl();
+    $art = $campaign->illustration();
+    $badge = $done ? CampaignStatus::Completed : ($campaign->status === CampaignStatus::Active && ! $accepting ? CampaignStatus::Closed : $campaign->status);
 @endphp
 <article {{ $attributes->class('flex flex-col rounded-lg border border-subtle bg-raised p-2') }}>
-    <div @class(['relative h-40 overflow-hidden rounded-md md:h-44', $done ? 'bg-sky-100' : 'bg-tag-100'])>
+    <div @class(['relative h-40 overflow-hidden rounded-md md:h-44', $image ? 'bg-ink-100' : $art['bg']])>
         @if ($image)
             <img src="{{ $image }}" alt="" loading="lazy" decoding="async" class="size-full object-cover">
         @else
-            <img src="{{ asset('images/illustrations/dog-caramel.svg') }}" alt="" class="absolute inset-x-0 bottom-0 mx-auto h-[90%] w-auto">
+            <img src="{{ $art['src'] }}" alt="" class="absolute inset-x-0 bottom-0 mx-auto h-[90%] w-auto">
         @endif
-        <x-badge :status="$done ? CampaignStatus::Completed : $campaign->status" @class(['absolute top-3 left-3', 'border-0 bg-white! shadow-sm' => $done]) />
+        <x-badge :status="$badge" @class(['absolute top-3 left-3', 'border-0 bg-white! shadow-sm' => $badge !== CampaignStatus::Active]) />
     </div>
 
     <div class="flex flex-1 flex-col px-3 pt-4 pb-3">
@@ -55,10 +59,10 @@
         </div>
 
         <div class="mt-4">
-            @if ($active)
+            @if ($accepting)
                 <x-button variant="donate" :href="$donateHref" icon="heart" block>Помочь сбору</x-button>
             @else
-                <x-button variant="secondary" :href="$href" block>Смотреть отчёт</x-button>
+                <x-button variant="secondary" :href="$href" block>{{ ($campaign->reports_count ?? null) === 0 ? 'Подробнее' : 'Смотреть отчёт' }}</x-button>
             @endif
         </div>
     </div>

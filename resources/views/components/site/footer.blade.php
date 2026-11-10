@@ -13,7 +13,7 @@
                 @foreach (array_slice(Navigation::main(), 0, 3) as $item)
                     <li><a href="{{ $item['href'] }}" class="hover:text-white hover:underline">{{ $item['label'] }}</a></li>
                 @endforeach
-                <li><a href="{{ Navigation::helpUrl() }}" class="hover:text-white hover:underline">Как помочь</a></li>
+                <li><a href="{{ Navigation::url('help', '/help') }}" class="hover:text-white hover:underline">Как помочь</a></li>
             </ul>
         </nav>
 

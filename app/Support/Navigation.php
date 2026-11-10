@@ -30,10 +30,10 @@ final class Navigation
         ];
     }
 
-    /** Ссылка жёлтой кнопки «Помочь» в шапке. */
+    /** Ссылка жёлтой кнопки «Помочь» в шапке — к сборам (карта сайта: акцентная кнопка → пожертвование). */
     public static function helpUrl(): string
     {
-        return self::url('help', '/help');
+        return self::url('campaigns.index', '/campaigns');
     }
 
     /**
@@ -54,6 +54,7 @@ final class Navigation
                 ['Питомцы', 'shelter.pets.index', 'paw', 'shelter/pets*'],
                 ['Заявки', 'shelter.applications.index', 'mail', 'shelter/applications*'],
                 ['Сборы', 'shelter.campaigns.index', 'tenge', 'shelter/campaigns*'],
+                ['Пожертвования', 'shelter.donations.index', 'heart', 'shelter/donations*'],
                 ['Слоты выгула', 'shelter.slots.index', 'calendar', 'shelter/slots*'],
                 ['Записи на выгул', 'shelter.bookings.index', 'leash', 'shelter/bookings*'],
                 ['Профиль приюта', 'shelter.profile', 'edit', 'shelter/profile*'],

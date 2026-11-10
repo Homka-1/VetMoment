@@ -36,4 +36,9 @@ enum PaymentStatus: string
             self::Refunded => Tone::Info,
         };
     }
+
+    public function isPending(): bool
+    {
+        return $this === self::Pending;
+    }
 }
