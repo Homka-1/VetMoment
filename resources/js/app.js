@@ -8,6 +8,7 @@ import { initDayPicker } from './ui/day-picker';
 import { initAutosubmit } from './ui/autosubmit';
 import { initShare } from './ui/share';
 import { initPhotoManager } from './ui/photo-manager';
+import { initWalkPicker } from './ui/walk-picker';
 
 function init(root = document) {
     initDialogs(root);
@@ -18,6 +19,7 @@ function init(root = document) {
     initAutosubmit(root);
     initShare(root);
     initPhotoManager(root);
+    initWalkPicker(root);
 }
 
 if (document.readyState === 'loading') {

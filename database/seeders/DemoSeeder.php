@@ -385,8 +385,8 @@ class DemoSeeder extends Seeder
             ]);
             $template->pets()->attach($dogs->pluck('id'));
 
-            // Две недели истории и неделя вперёд
-            for ($date = $today->copy()->subDays(14); $date->lte($today->copy()->addDays(7)); $date->addDay()) {
+            // Две недели истории и весь горизонт записи вперёд (config/walks.php)
+            for ($date = $today->copy()->subDays(14); $date->lte($today->copy()->addDays((int) config('walks.horizon_days', 14))); $date->addDay()) {
                 if (! $template->hasWeekday($date->dayOfWeekIso)) {
                     continue;
                 }

@@ -231,6 +231,7 @@
                     <x-walk-slot name="sg_slot" value="3" :start="$base->copy()->addDay()->addHours(4)" :end="$base->copy()->addDay()->addHours(5)" state="available" :spots="4" checked />
                     <x-walk-slot name="sg_slot" value="4" :start="$base->copy()->addDay()->addHours(7)" :end="$base->copy()->addDay()->addHours(8)" state="full" :spots="0" />
                     <x-walk-slot name="sg_slot" value="5" :start="$base->copy()->subHours(2)" :end="$base->copy()->subHour()" state="past" :spots="0" />
+                    <x-walk-slot name="sg_slot" value="6" :start="$base->copy()->addHour()" :end="$base->copy()->addHours(2)" state="closed" :spots="2" />
                 </div>
             </fieldset>
 

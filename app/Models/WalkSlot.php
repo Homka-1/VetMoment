@@ -118,9 +118,36 @@ class WalkSlot extends Model
             $this->status === WalkSlotStatus::Cancelled => WalkSlotState::Cancelled,
             $this->starts_at->lessThanOrEqualTo($now) => WalkSlotState::Past,
             $this->spotsLeft() === 0 => WalkSlotState::Full,
+            $this->starts_at->lessThan(self::bookingClosesAt($now)) => WalkSlotState::Closed,
             $this->booked_count > 0 && $this->spotsLeft() <= self::FEW_SPOTS_LEFT => WalkSlotState::FewLeft,
             default => WalkSlotState::Available,
         };
+    }
+
+    /** Слоты, начинающиеся раньше этого момента, уже закрыты для записи (W1). */
+    public static function bookingClosesAt(?Carbon $now = null): Carbon
+    {
+        return ($now ?? now())->copy()->addHours((int) config('walks.book_before_hours', 2));
+    }
+
+    /** Граница горизонта записи (W2): слоты позже этого момента волонтёрам не показываются. */
+    public static function horizonEndsAt(?Carbon $now = null): Carbon
+    {
+        return ($now ?? now())->copy()->addDays((int) config('walks.horizon_days', 14));
+    }
+
+    /** Пересекается ли по времени с другим интервалом (W5). */
+    public function overlaps(self $other): bool
+    {
+        return $this->starts_at->lessThan($other->ends_at) && $this->ends_at->greaterThan($other->starts_at);
+    }
+
+    /** Можно ли сейчас выбрать питомца в этом слоте: слот без списка — «питомца назначит приют». */
+    public function offersPet(Pet $pet): bool
+    {
+        return $this->relationLoaded('pets')
+            ? $this->pets->contains($pet)
+            : $this->pets()->whereKey($pet->getKey())->exists();
     }
 
     /**

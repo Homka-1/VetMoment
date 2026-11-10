@@ -3,7 +3,7 @@
 namespace App\Enums;
 
 /**
- * Вычисляемое состояние слота для интерфейса: свободен / мало мест / заполнен / прошёл / отменён.
+ * Вычисляемое состояние слота для интерфейса: свободен / мало мест / заполнен / запись закрыта / прошёл / отменён.
  */
 enum WalkSlotState: string
 {
@@ -12,6 +12,8 @@ enum WalkSlotState: string
     case Available = 'available';
     case FewLeft = 'few_left';
     case Full = 'full';
+    /** Слот ещё не начался, но запись уже закрыта (W1: меньше чем за config('walks.book_before_hours') ч). */
+    case Closed = 'closed';
     case Past = 'past';
     case Cancelled = 'cancelled';
 
@@ -21,6 +23,7 @@ enum WalkSlotState: string
             self::Available => 'Свободен',
             self::FewLeft => 'Мало мест',
             self::Full => 'Мест нет',
+            self::Closed => 'Запись закрыта',
             self::Past => 'Прошёл',
             self::Cancelled => 'Отменён',
         };
@@ -31,7 +34,7 @@ enum WalkSlotState: string
         return match ($this) {
             self::Available => Tone::Success,
             self::FewLeft => Tone::Warning,
-            self::Full, self::Past, self::Cancelled => Tone::Neutral,
+            self::Full, self::Closed, self::Past, self::Cancelled => Tone::Neutral,
         };
     }
 

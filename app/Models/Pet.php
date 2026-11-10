@@ -293,4 +293,11 @@ class Pet extends Model
     {
         $query->visible()->whereIn('status', PetStatus::catalog());
     }
+
+    /** Готовы к прогулке (W8): отмечены «можно на выгул» и в подходящем статусе. */
+    #[Scope]
+    protected function walkable(Builder $query): void
+    {
+        $query->where('can_walk', true)->whereIn('status', PetStatus::walkable());
+    }
 }

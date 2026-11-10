@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Cabinet\DonationController as CabinetDonationController;
 use App\Http\Controllers\Cabinet\FavoriteController as CabinetFavoriteController;
 use App\Http\Controllers\Cabinet\ShelterApplicationController;
+use App\Http\Controllers\Cabinet\WalkController as CabinetWalkController;
 use App\Http\Controllers\CabinetStubController;
 use App\Http\Controllers\Campaigns\CampaignController;
 use App\Http\Controllers\Donations\DonationController;
@@ -21,7 +22,12 @@ use App\Http\Controllers\Shelter\CampaignController as ShelterCampaignController
 use App\Http\Controllers\Shelter\CampaignReportController;
 use App\Http\Controllers\Shelter\DonationController as ShelterDonationController;
 use App\Http\Controllers\Shelter\PetController as ShelterPetController;
+use App\Http\Controllers\Shelter\WalkBookingController as ShelterWalkBookingController;
+use App\Http\Controllers\Shelter\WalkSlotController as ShelterWalkSlotController;
+use App\Http\Controllers\Shelter\WalkTemplateController;
 use App\Http\Controllers\StyleguideController;
+use App\Http\Controllers\Walks\BookingController as WalkBookingController;
+use App\Http\Controllers\Walks\WalkController;
 use Illuminate\Support\Facades\Route;
 
 // Главная: на этапе 7 — статичные блоки (герой, три пути помощи), блоки с данными — после этапов 8–10.
@@ -62,6 +68,19 @@ Route::get('/payments/fake/{donation}', [FakePaymentController::class, 'show'])-
 Route::post('/payments/fake/{donation}', [FakePaymentController::class, 'pay'])->middleware('throttle:forms')->name('payments.fake.pay');
 Route::post('/payments/webhook/{provider}', WebhookController::class)->name('payments.webhook');
 
+// --- Запись на выгул: приют и время → подтверждение → запись ----------------------------------
+Route::get('/walks', [WalkController::class, 'index'])->name('walks.index');
+Route::get('/walks/continue', [WalkController::class, 'continue'])->name('walks.continue');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/walks/slots/{slot}', [WalkController::class, 'show'])->name('walks.slots.show');
+    Route::post('/walks/slots/{slot}/book', [WalkController::class, 'book'])->middleware('throttle:forms')->name('walks.book');
+
+    Route::get('/walks/bookings/{booking}', [WalkBookingController::class, 'show'])->name('walks.bookings.show');
+    Route::post('/walks/bookings/{booking}/cancel', [WalkBookingController::class, 'cancel'])->name('walks.bookings.cancel');
+    Route::get('/walks/bookings/{booking}/calendar.ics', [WalkBookingController::class, 'calendar'])->name('walks.bookings.calendar');
+});
+
 // --- Аутентификация -------------------------------------------------------------------------
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'create'])->name('login');
@@ -86,6 +105,7 @@ Route::middleware('auth')->prefix('cabinet')->name('cabinet.')->group(function (
     Route::get('/', [CabinetStubController::class, 'volunteer'])->name('dashboard');
     Route::get('/favorites', [CabinetFavoriteController::class, 'index'])->name('favorites');
     Route::get('/donations', [CabinetDonationController::class, 'index'])->name('donations');
+    Route::get('/walks', [CabinetWalkController::class, 'index'])->name('walks');
 
     Route::get('/shelter-request', [ShelterApplicationController::class, 'create'])->name('shelter-request');
     Route::post('/shelter-request', [ShelterApplicationController::class, 'store'])
@@ -110,6 +130,18 @@ Route::middleware('role:shelter_staff')->prefix('shelter')->name('shelter.')->gr
 
     Route::get('/donations', [ShelterDonationController::class, 'index'])->name('donations.index');
     Route::get('/donations/export', [ShelterDonationController::class, 'export'])->name('donations.export');
+
+    Route::get('/slots', [ShelterWalkSlotController::class, 'index'])->name('slots.index');
+    Route::post('/slots', [ShelterWalkSlotController::class, 'store'])->name('slots.store');
+    Route::get('/slots/templates', [WalkTemplateController::class, 'index'])->name('slot-templates.index');
+    Route::post('/slots/templates', [WalkTemplateController::class, 'store'])->name('slot-templates.store');
+    Route::delete('/slots/templates/{template}', [WalkTemplateController::class, 'destroy'])->name('slot-templates.destroy');
+    Route::get('/slots/{slot}', [ShelterWalkSlotController::class, 'show'])->name('slots.show');
+    Route::patch('/slots/{slot}', [ShelterWalkSlotController::class, 'update'])->name('slots.update');
+    Route::post('/slots/{slot}/cancel', [ShelterWalkSlotController::class, 'cancel'])->name('slots.cancel');
+
+    Route::get('/bookings', [ShelterWalkBookingController::class, 'index'])->name('bookings.index');
+    Route::patch('/bookings/{booking}', [ShelterWalkBookingController::class, 'update'])->name('bookings.update');
 });
 
 // --- Админка ----------------------------------------------------------------------------------

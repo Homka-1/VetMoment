@@ -10,6 +10,7 @@
     'name' => 'slot_id',
     'value' => null,
     'checked' => false,
+    'id' => null,
 ])
 @php
     // Слот выгула (UI-кит, артборд 03). Это радиокнопка: выбранный — тёмная плашка «Вы выбрали».
@@ -28,6 +29,7 @@
     $note = match ($state) {
         WalkSlotState::Available, WalkSlotState::FewLeft => 'Осталось '.Plural::format((int) $spots, ['место', 'места', 'мест']),
         WalkSlotState::Full => 'Мест нет',
+        WalkSlotState::Closed => 'Запись закрыта',
         WalkSlotState::Past => 'Уже прошёл',
         WalkSlotState::Cancelled => 'Отменён',
     };
@@ -35,9 +37,9 @@
         WalkSlotState::Available => 'leash',
         WalkSlotState::FewLeft => 'alert-triangle',
         WalkSlotState::Full, WalkSlotState::Cancelled => 'x',
-        WalkSlotState::Past => 'clock',
+        WalkSlotState::Past, WalkSlotState::Closed => 'clock',
     };
-    $id = 'slot-'.($value ?? uniqid());
+    $id ??= 'slot-'.($value ?? uniqid());
 @endphp
 <label for="{{ $id }}" {{ $attributes->class([
     'group relative grid min-w-[148px] gap-1 rounded-sm border-control px-4 py-3 transition-colors duration-120',
@@ -45,7 +47,7 @@
     'cursor-pointer has-checked:border-ink-900 has-checked:bg-ink-900 has-checked:text-white' => $bookable,
     'border-meadow-600 bg-white hover:bg-meadow-100' => $state === WalkSlotState::Available,
     'border-tag-600 bg-white hover:bg-tag-100' => $state === WalkSlotState::FewLeft,
-    'cursor-not-allowed border-ink-200 bg-ink-100 text-ink-500' => $state === WalkSlotState::Full || $state === WalkSlotState::Cancelled,
+    'cursor-not-allowed border-ink-200 bg-ink-100 text-ink-500' => in_array($state, [WalkSlotState::Full, WalkSlotState::Closed, WalkSlotState::Cancelled], true),
     'cursor-not-allowed border-dashed border-ink-200 bg-white text-ink-400' => $state === WalkSlotState::Past,
 ]) }}>
     <input type="radio" name="{{ $name }}" id="{{ $id }}" value="{{ $value }}" class="peer sr-only"

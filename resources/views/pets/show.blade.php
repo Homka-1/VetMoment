@@ -3,7 +3,6 @@
 @use('App\Enums\PetStatus')
 @use('App\Enums\WalkSlotState')
 @use('App\Support\LocalTime')
-@use('App\Support\Navigation')
 @use('App\Support\Phone')
 @use('App\Support\Plural')
 @use('Illuminate\Support\Facades\Route')
@@ -19,12 +18,12 @@
     $isAdopted = $pet->status === PetStatus::Adopted;
     $isPublic = in_array($pet->status, PetStatus::public(), true) && ! $pet->is_hidden && $shelter->isApproved();
     $applyUrl = fn (ApplicationType $type) => route('pets.apply', [$pet, 'type' => $type->value]);
-    $walkUrl = Navigation::url('walks.index', '/walks').'?pet='.$pet->slug;
+    $walkUrl = route('walks.index', ['pet' => $pet->slug]);
     $shelterUrl = Route::has('shelters.show') ? route('shelters.show', $shelter) : url('/shelters/'.$shelter->slug);
     $helpUrl = $campaign
         ? (Route::has('campaigns.show') ? route('campaigns.show', $campaign) : url('/campaigns/'.$campaign->slug))
         : (Route::has('shelters.donate') ? route('shelters.donate', $shelter) : url('/shelters/'.$shelter->slug.'/donate'));
-    $slotUrl = fn ($slot) => Route::has('walks.slots.show') ? route('walks.slots.show', $slot) : url('/walks/slots/'.$slot->id);
+    $slotUrl = fn ($slot) => route('walks.slots.show', [$slot, 'pet' => $pet->slug]);
     $adoption = $applications->get(ApplicationType::Adoption->value);
     $guardianship = $applications->get(ApplicationType::Guardianship->value);
     $showApply = $canApply && ! $isAdopted;
