@@ -1,8 +1,10 @@
 <?php
 
 use App\Services\DonationPayments;
+use App\Services\WalkBookingService;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schedule;
 use Illuminate\Support\Facades\Schema;
 
 /*
@@ -50,7 +52,7 @@ Artisan::command('app:seed-if-empty', function () {
 })->purpose('Заполнить базу демо-данными, если она пустая');
 
 /*
-| Пожертвования (этап 9). Запуск по расписанию подключается на этапе 12 (планировщик в Docker).
+| Пожертвования (этап 9). Запускаются по расписанию — см. конец файла.
 */
 
 Artisan::command('app:expire-pending-donations', function (DonationPayments $payments) {
@@ -60,3 +62,26 @@ Artisan::command('app:expire-pending-donations', function (DonationPayments $pay
 Artisan::command('app:close-expired-campaigns', function (DonationPayments $payments) {
     $this->info('Закрыто сборов с истёкшим сроком: '.$payments->closeExpiredCampaigns());
 })->purpose('Закрыть идущие сборы, у которых прошла дата окончания');
+
+/*
+| Выгул (этап 12).
+*/
+
+Artisan::command('app:send-walk-reminders', function (WalkBookingService $walks) {
+    $this->info('Отправлено напоминаний о прогулках: '.$walks->sendReminders());
+})->purpose('Напомнить волонтёрам о подтверждённых прогулках за сутки (walks.reminder_hours)');
+
+Artisan::command('app:expire-unconfirmed-bookings', function (WalkBookingService $walks) {
+    $this->info('Отменено неподтверждённых записей: '.$walks->expireUnconfirmed());
+})->purpose('Отменить записи на выгул, которые приют не подтвердил до начала прогулки');
+
+/*
+| Расписание. В Docker его выполняет контейнер scheduler (php artisan schedule:work),
+| без Docker — `php artisan schedule:work` в отдельном окне терминала.
+*/
+
+Schedule::command('app:expire-pending-donations')->everyTenMinutes()->withoutOverlapping();
+Schedule::command('app:close-expired-campaigns')->everyFifteenMinutes()->withoutOverlapping();
+Schedule::command('app:send-walk-reminders')->everyFifteenMinutes()->withoutOverlapping();
+Schedule::command('app:expire-unconfirmed-bookings')->everyFifteenMinutes()->withoutOverlapping();
+Schedule::command('queue:prune-failed', ['--hours' => 24 * 14])->daily();

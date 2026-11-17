@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 #[Fillable([
     'walk_slot_id', 'user_id', 'pet_id', 'status', 'comment', 'shelter_comment', 'cancelled_by',
-    'confirmed_at', 'cancelled_at',
+    'confirmed_at', 'cancelled_at', 'reminder_sent_at',
 ])]
 class WalkBooking extends Model
 {
@@ -42,6 +42,7 @@ class WalkBooking extends Model
             'cancelled_by' => CancelledBy::class,
             'confirmed_at' => 'datetime',
             'cancelled_at' => 'datetime',
+            'reminder_sent_at' => 'datetime',
         ];
     }
 

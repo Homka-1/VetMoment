@@ -8,14 +8,18 @@ use App\Models\Donation;
 use App\Models\DonationCampaign;
 use App\Models\Shelter;
 use App\Models\User;
+use App\Notifications\CampaignGoalReached;
+use App\Notifications\DonationReceived;
 use App\Payments\InvalidWebhook;
 use App\Payments\PaymentGateway;
 use App\Payments\PaymentGateways;
 use App\Payments\WebhookEvent;
+use App\Support\Recipients;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 
 /**
  * Жизненный цикл пожертвования (docs/product/user-flows.md, 2):
@@ -168,11 +172,18 @@ class DonationPayments
                 $this->recalculate($donation->campaign_id);
             }
 
+            if ($event->status === PaymentStatus::Succeeded) {
+                $this->thank($donation);
+            }
+
             return self::APPLIED;
         });
     }
 
-    /** Пересчёт сумм сбора под блокировкой строки сбора и перевод в «Цель достигнута». */
+    /**
+     * Пересчёт сумм сбора под блокировкой строки сбора и перевод в «Цель достигнута».
+     * При достижении цели — уведомление приюту и жертвователям с аккаунтом (после коммита).
+     */
     public function recalculate(int $campaignId): void
     {
         DB::transaction(function () use ($campaignId): void {
@@ -180,9 +191,38 @@ class DonationPayments
 
             if ($campaign !== null) {
                 $campaign->recalculateTotals();
-                $campaign->syncCompletion();
+
+                if ($campaign->syncCompletion()) {
+                    $this->announceGoalReached($campaign);
+                }
             }
         });
+    }
+
+    /** Спасибо жертвователю: пользователю — в уведомления и на почту аккаунта, гостю — на указанный email. */
+    private function thank(Donation $donation): void
+    {
+        $notification = new DonationReceived($donation);
+
+        if ($donation->user_id !== null && $donation->user !== null) {
+            $donation->user->notify($notification);
+        } elseif (filled($donation->donor_email)) {
+            Notification::route('mail', $donation->donor_email)->notify($notification);
+        }
+    }
+
+    private function announceGoalReached(DonationCampaign $campaign): void
+    {
+        $staff = Recipients::shelterStaff($campaign->shelter_id);
+        Notification::send($staff, new CampaignGoalReached($campaign, forShelter: true));
+
+        $donors = User::query()
+            ->whereIn('id', $campaign->donations()->where('status', PaymentStatus::Succeeded)->whereNotNull('user_id')->select('user_id'))
+            ->whereNotIn('id', $staff->modelKeys())
+            ->where('is_blocked', false)
+            ->get();
+
+        Notification::send($donors, new CampaignGoalReached($campaign, forShelter: false));
     }
 
     /**

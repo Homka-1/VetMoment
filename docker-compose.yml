@@ -62,6 +62,25 @@ services:
             app:
                 condition: service_healthy
 
+    # Планировщик: php artisan schedule:work (список задач — routes/console.php)
+    scheduler:
+        image: vetmoment-app
+        container_name: vetmoment_scheduler
+        command: ["scheduler"]
+        restart: unless-stopped
+        environment: *app-env
+        volumes:
+            - vetmoment_storage:/var/www/html/storage
+        healthcheck:
+            test: ["CMD-SHELL", "grep -qa 'schedule:work' /proc/1/cmdline"]
+            interval: 10s
+            timeout: 5s
+            start_period: 30s
+            retries: 3
+        depends_on:
+            app:
+                condition: service_healthy
+
     db:
         image: postgres:15-alpine
         container_name: vetmoment_db

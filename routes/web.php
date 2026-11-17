@@ -21,6 +21,7 @@ use App\Http\Controllers\Cabinet\WalkController as CabinetWalkController;
 use App\Http\Controllers\Campaigns\CampaignController;
 use App\Http\Controllers\Donations\DonationController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Payments\FakePaymentController;
 use App\Http\Controllers\Payments\WebhookController;
 use App\Http\Controllers\Pets\AdoptionApplicationController;
@@ -134,6 +135,13 @@ Route::middleware('auth')->prefix('cabinet')->name('cabinet.')->group(function (
     Route::get('/shelter-request', [ShelterApplicationController::class, 'create'])->name('shelter-request');
     Route::post('/shelter-request', [ShelterApplicationController::class, 'store'])
         ->middleware('throttle:forms')->name('shelter-request.store');
+});
+
+// --- Уведомления (все роли) -------------------------------------------------------------------
+Route::middleware('auth')->prefix('notifications')->name('notifications.')->group(function () {
+    Route::get('/', [NotificationController::class, 'index'])->name('index');
+    Route::post('/read-all', [NotificationController::class, 'readAll'])->name('read-all');
+    Route::get('/{id}', [NotificationController::class, 'open'])->whereUuid('id')->name('open');
 });
 
 // --- Кабинет приюта ---------------------------------------------------------------------------

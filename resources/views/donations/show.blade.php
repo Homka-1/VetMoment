@@ -50,6 +50,10 @@
                 @switch($status)
                     @case(PaymentStatus::Succeeded)
                         <p>{{ $amount }} ушли на {{ $campaign ? 'сбор '.$target : $target }}. Когда приют потратит деньги, на странице {{ $campaign ? 'сбора' : 'приюта' }} появится отчёт с чеками.</p>
+                        @php($receiptEmail = $donation->user?->email ?? $donation->donor_email)
+                        @if ($owner && filled($receiptEmail))
+                            <p>Квитанцию отправили на {{ $receiptEmail }}.</p>
+                        @endif
                         @break
                     @case(PaymentStatus::Pending)
                         @if ($waiting)

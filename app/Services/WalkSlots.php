@@ -8,6 +8,7 @@ use App\Enums\WalkSlotStatus;
 use App\Models\Shelter;
 use App\Models\WalkSlot;
 use App\Models\WalkTemplate;
+use App\Notifications\WalkBookingDecided;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -158,23 +159,31 @@ class WalkSlots
         });
     }
 
-    /** Отмена слота: все активные записи — «Отменена» приютом с причиной. */
+    /** Отмена слота: все активные записи — «Отменена» приютом с причиной, записавшимся — уведомление. */
     public function cancel(WalkSlot $slot, string $reason): int
     {
         return DB::transaction(function () use ($slot, $reason): int {
             $slot = WalkSlot::query()->whereKey($slot->getKey())->lockForUpdate()->firstOrFail();
+            $bookings = $slot->activeBookings()->with('user', 'pet')->get();
 
-            $cancelled = $slot->activeBookings()->update([
-                'status' => BookingStatus::Cancelled,
-                'cancelled_by' => CancelledBy::Shelter,
-                'cancelled_at' => now(),
-                'shelter_comment' => $reason,
-            ]);
+            foreach ($bookings as $booking) {
+                $booking->update([
+                    'status' => BookingStatus::Cancelled,
+                    'cancelled_by' => CancelledBy::Shelter,
+                    'cancelled_at' => now(),
+                    'shelter_comment' => $reason,
+                ]);
+            }
 
             $slot->update(['status' => WalkSlotStatus::Cancelled]);
             $slot->recalculateBookedCount();
+            $slot->load('shelter');
 
-            return $cancelled;
+            foreach ($bookings as $booking) {
+                $booking->user->notify(new WalkBookingDecided($booking->setRelation('slot', $slot)));
+            }
+
+            return $bookings->count();
         });
     }
 

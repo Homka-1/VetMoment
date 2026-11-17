@@ -170,11 +170,16 @@ class DonationCampaign extends Model
     /**
      * Сбор достиг цели → «Цель достигнута». Вызывать после recalculateTotals() в той же транзакции.
      */
-    public function syncCompletion(): void
+    /** @return bool сбор только что перешёл в «Цель достигнута» */
+    public function syncCompletion(): bool
     {
         if ($this->status === CampaignStatus::Active && $this->isGoalReached()) {
             $this->forceFill(['status' => CampaignStatus::Completed, 'completed_at' => now()])->save();
+
+            return true;
         }
+
+        return false;
     }
 
     /** Обложка: своя картинка сбора, иначе обложка анкеты питомца (если связь загружена). */

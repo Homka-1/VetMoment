@@ -1,7 +1,8 @@
 #!/bin/sh
 # Точка входа контейнера VetMoment.
 #   app   — веб-сервер (по умолчанию): готовит окружение, мигрирует БД, грузит демо-данные, запускает Apache;
-#   queue — воркер очереди (ждёт, пока app подготовит окружение);
+#   queue — воркер очереди (письма уведомлений; ждёт, пока app подготовит окружение);
+#   scheduler — планировщик задач (напоминания о выгуле, закрытие сборов, истёкшие платежи);
 #   любая другая команда выполняется как есть.
 set -e
 
@@ -82,6 +83,15 @@ case "$ROLE" in
         fix_permissions
         log "Запускаем воркер очереди"
         exec runuser -u www-data -- php artisan queue:work --sleep=3 --tries=3 --max-time=3600
+        ;;
+
+    scheduler)
+        prepare_env
+        load_app_key
+        php artisan app:wait-for-db --timeout=120
+        fix_permissions
+        log "Запускаем планировщик задач"
+        exec runuser -u www-data -- php artisan schedule:work
         ;;
 
     *)

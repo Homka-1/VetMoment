@@ -8,7 +8,11 @@ use App\Enums\PetStatus;
 use App\Models\AdoptionApplication;
 use App\Models\Pet;
 use App\Models\User;
+use App\Notifications\ApplicationDecided;
+use App\Notifications\ApplicationSubmitted;
+use App\Support\Recipients;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -48,7 +52,7 @@ class AdoptionApplications
                 ]);
             }
 
-            return $pet->applications()->create([
+            $application = $pet->applications()->create([
                 'user_id' => $user->getKey(),
                 'type' => $type,
                 'contact_name' => $data['contact_name'],
@@ -59,6 +63,10 @@ class AdoptionApplications
                 'message' => $data['message'] ?? null,
                 'status' => ApplicationStatus::New,
             ]);
+
+            Notification::send(Recipients::shelterStaff($pet->shelter_id), new ApplicationSubmitted($application->setRelation('pet', $pet)));
+
+            return $application;
         });
     }
 
@@ -99,6 +107,8 @@ class AdoptionApplications
                 'processed_at' => now(),
             ]);
 
+            $application->user?->notify(new ApplicationDecided($application));
+
             if ($to === ApplicationStatus::Completed && $application->type === ApplicationType::Adoption) {
                 $pet = $application->pet;
                 $pet->update(['status' => PetStatus::Adopted, 'adopted_at' => now()]);
@@ -123,15 +133,15 @@ class AdoptionApplications
             if (! $completed && $application->status === ApplicationStatus::Approved && $application->type === ApplicationType::Adoption) {
                 $application->update(['status' => ApplicationStatus::Completed, 'processed_at' => now()]);
                 $completed = true;
-
-                continue;
+            } else {
+                $application->update([
+                    'status' => ApplicationStatus::Rejected,
+                    'shelter_comment' => self::PET_ADOPTED_COMMENT,
+                    'processed_at' => now(),
+                ]);
             }
 
-            $application->update([
-                'status' => ApplicationStatus::Rejected,
-                'shelter_comment' => self::PET_ADOPTED_COMMENT,
-                'processed_at' => now(),
-            ]);
+            $application->user?->notify(new ApplicationDecided($application->setRelation('pet', $pet)));
         }
     }
 }

@@ -39,8 +39,9 @@ final class Navigation
 
     /**
      * Боковое меню кабинета по роли. Показываются только разделы, у которых уже есть маршрут.
+     * У «Уведомлений» — счётчик непрочитанных (count, тот же запрос, что у колокольчика в шапке).
      *
-     * @return list<array{label: string, href: string, icon: string, active: bool}>
+     * @return list<array{label: string, href: string, icon: string, active: bool, count?: int}>
      */
     public static function cabinet(User $user): array
     {
@@ -52,6 +53,7 @@ final class Navigation
                 ['Сборы', 'admin.campaigns.index', 'tenge', 'admin/campaigns*'],
                 ['Заявки', 'admin.applications.index', 'mail', 'admin/applications*'],
                 ['Пользователи', 'admin.users.index', 'users', 'admin/users*'],
+                ['Уведомления', 'notifications.index', 'bell', 'notifications*'],
                 ['Мой профиль', 'cabinet.profile', 'user', 'cabinet/profile*'],
             ],
             Role::ShelterStaff => [
@@ -62,6 +64,7 @@ final class Navigation
                 ['Пожертвования', 'shelter.donations.index', 'heart', 'shelter/donations*'],
                 ['Слоты выгула', 'shelter.slots.index', 'calendar', 'shelter/slots*'],
                 ['Записи на выгул', 'shelter.bookings.index', 'leash', 'shelter/bookings*'],
+                ['Уведомления', 'notifications.index', 'bell', 'notifications*'],
                 ['Профиль приюта', 'shelter.profile', 'edit', 'shelter/profile*'],
                 ['Мой профиль', 'cabinet.profile', 'user', 'cabinet/profile*'],
             ],
@@ -71,6 +74,7 @@ final class Navigation
                 ['Мои заявки', 'cabinet.applications', 'mail', 'cabinet/applications*'],
                 ['Мои пожертвования', 'cabinet.donations', 'tenge', 'cabinet/donations*'],
                 ['Избранное', 'cabinet.favorites', 'heart', 'cabinet/favorites*'],
+                ['Уведомления', 'notifications.index', 'bell', 'notifications*'],
                 ['Профиль', 'cabinet.profile', 'user', 'cabinet/profile*'],
             ],
         };
@@ -88,7 +92,13 @@ final class Navigation
             }
 
             if (Route::has($route)) {
-                $result[] = ['label' => $label, 'href' => route($route), 'icon' => $icon, 'active' => request()->is($pattern)];
+                $item = ['label' => $label, 'href' => route($route), 'icon' => $icon, 'active' => request()->is($pattern)];
+
+                if ($route === 'notifications.index') {
+                    $item['count'] = $user->unreadNotificationsCount();
+                }
+
+                $result[] = $item;
             }
         }
 

@@ -25,11 +25,16 @@
                         <li class="shrink-0">
                             <a href="{{ $item['href'] }}" @if ($item['active']) aria-current="page" @endif
                                @class([
-                                   'flex h-control items-center gap-3 rounded-pill border px-4 text-sm font-semibold transition-colors duration-120 lg:rounded-sm lg:border-0',
+                                   'relative flex h-control items-center gap-3 rounded-pill border px-4 text-sm font-semibold transition-colors duration-120 lg:rounded-sm lg:border-0',
                                    'border-ink-900 bg-ink-900 text-white lg:bg-white lg:text-primary lg:shadow-sm' => $item['active'],
                                    'border-ink-300 bg-white text-secondary hover:text-primary lg:bg-transparent lg:hover:bg-white' => ! $item['active'],
                                ])>
                                 <x-icon :name="$item['icon']" size="sm" @class(['hidden lg:block', 'text-tag-700' => $item['active']]) />{{ $item['label'] }}
+                                @if (! empty($item['count']))
+                                    <span class="ml-auto grid h-5 min-w-5 place-items-center rounded-pill bg-danger-solid px-1.5 text-xs leading-none font-bold text-white tabular-nums">
+                                        {{ $item['count'] > 99 ? '99+' : $item['count'] }}<span class="sr-only"> непрочитанных</span>
+                                    </span>
+                                @endif
                             </a>
                         </li>
                     @endforeach

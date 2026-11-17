@@ -5,13 +5,20 @@ namespace App\Services;
 use App\Enums\BookingStatus;
 use App\Enums\CancelledBy;
 use App\Enums\WalkSlotState;
+use App\Enums\WalkSlotStatus;
 use App\Models\Pet;
 use App\Models\User;
 use App\Models\WalkBooking;
 use App\Models\WalkSlot;
+use App\Notifications\WalkBookingCancelled;
+use App\Notifications\WalkBookingCreated;
+use App\Notifications\WalkBookingDecided;
+use App\Notifications\WalkReminder;
 use App\Support\Plural;
+use App\Support\Recipients;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -21,6 +28,8 @@ use Illuminate\Validation\ValidationException;
  * Гонки (W9): запись и отмена идут в транзакции под lockForUpdate() на слот и на пользователя —
  * два человека не займут последнее место, один человек не обойдёт лимит двумя вкладками.
  * Счётчик booked_count пересчитывается агрегатом под той же блокировкой.
+ *
+ * Уведомления (этап 12) отправляются после коммита (AppNotification::afterCommit).
  */
 class WalkBookingService
 {
@@ -32,6 +41,8 @@ class WalkBookingService
 
     /** Отметки «состоялся» / «не пришёл» — только когда прогулка началась. */
     private const AFTER_START = [BookingStatus::Completed, BookingStatus::NoShow];
+
+    public const UNCONFIRMED_COMMENT = 'Приют не успел подтвердить запись до начала прогулки.';
 
     /** Подтвердить, отклонить и отменить можно только до начала. */
     private const BEFORE_START = [BookingStatus::Confirmed, BookingStatus::Rejected, BookingStatus::Cancelled];
@@ -63,6 +74,8 @@ class WalkBookingService
 
             $slot->recalculateBookedCount();
 
+            Notification::send(Recipients::shelterStaff($slot->shelter), new WalkBookingCreated($booking->setRelation('slot', $slot)));
+
             return $booking;
         });
     }
@@ -91,6 +104,8 @@ class WalkBookingService
             ]);
 
             $slot->recalculateBookedCount();
+
+            Notification::send(Recipients::shelterStaff($slot->shelter_id), new WalkBookingCancelled($booking));
         });
     }
 
@@ -132,6 +147,10 @@ class WalkBookingService
 
             $booking->update($data);
             $slot->recalculateBookedCount();
+
+            if (in_array($status, self::BEFORE_START, true)) {
+                $booking->user->notify(new WalkBookingDecided($booking));
+            }
         });
     }
 
@@ -265,6 +284,73 @@ class WalkBookingService
                 'slot_id' => "У вас уже {$limit} предстоящие записи — это максимум. Сходите на прогулку или отмените одну из записей.",
             ]);
         }
+    }
+
+    /**
+     * Напоминания о подтверждённых прогулках, до которых осталось не больше config('walks.reminder_hours') часов.
+     * Отметка reminder_sent_at ставится условным UPDATE: два параллельных запуска не пришлют письмо дважды.
+     */
+    public function sendReminders(): int
+    {
+        $sent = 0;
+
+        WalkBooking::query()
+            ->where('status', BookingStatus::Confirmed)
+            ->whereNull('reminder_sent_at')
+            ->whereHas('slot', fn (Builder $q) => $q
+                ->where('status', WalkSlotStatus::Open)
+                ->where('starts_at', '>', now())
+                ->where('starts_at', '<=', now()->addHours((int) config('walks.reminder_hours', 24))))
+            ->with('slot.shelter', 'pet', 'user')
+            ->chunkById(100, function ($bookings) use (&$sent): void {
+                foreach ($bookings as $booking) {
+                    $claimed = WalkBooking::query()->whereKey($booking->getKey())->whereNull('reminder_sent_at')
+                        ->update(['reminder_sent_at' => now()]);
+
+                    if ($claimed === 1 && ! $booking->user->is_blocked) {
+                        $booking->user->notify(new WalkReminder($booking));
+                        $sent++;
+                    }
+                }
+            });
+
+        return $sent;
+    }
+
+    /**
+     * Записи, которые приют так и не подтвердил до начала прогулки, → «Отменена» системой; волонтёру — уведомление.
+     */
+    public function expireUnconfirmed(): int
+    {
+        $bookings = WalkBooking::query()
+            ->where('status', BookingStatus::Pending)
+            ->whereHas('slot', fn (Builder $q) => $q->where('starts_at', '<=', now()))
+            ->with('slot.shelter', 'pet', 'user')
+            ->get();
+
+        foreach ($bookings->groupBy('walk_slot_id') as $slotBookings) {
+            DB::transaction(function () use ($slotBookings): void {
+                $slot = WalkSlot::query()->whereKey($slotBookings->first()->walk_slot_id)->lockForUpdate()->firstOrFail();
+
+                foreach ($slotBookings as $booking) {
+                    $updated = WalkBooking::query()->whereKey($booking->getKey())->where('status', BookingStatus::Pending)->update([
+                        'status' => BookingStatus::Cancelled,
+                        'cancelled_by' => CancelledBy::System,
+                        'cancelled_at' => now(),
+                        'shelter_comment' => self::UNCONFIRMED_COMMENT,
+                        'updated_at' => now(),
+                    ]);
+
+                    if ($updated === 1) {
+                        $booking->user->notify(new WalkBookingDecided($booking->refresh()->setRelation('slot', $slotBookings->first()->slot)));
+                    }
+                }
+
+                $slot->recalculateBookedCount();
+            });
+        }
+
+        return $bookings->count();
     }
 
     /** «3 часа» — для сообщений о сроках записи и отмены. */

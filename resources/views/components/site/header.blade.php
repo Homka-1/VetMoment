@@ -5,7 +5,7 @@
 @php
     $nav = Navigation::main();
     $user = auth()->user();
-    $unread = $user ? $user->unreadNotifications()->count() : 0;
+    $unread = $user ? $user->unreadNotificationsCount() : 0;
 @endphp
 <header class="sticky top-0 z-40 border-b border-subtle bg-white/95 backdrop-blur">
     <div class="page-container flex h-header items-center gap-8 lg:h-header-lg">

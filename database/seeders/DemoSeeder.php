@@ -22,11 +22,19 @@ use App\Models\User;
 use App\Models\WalkBooking;
 use App\Models\WalkSlot;
 use App\Models\WalkTemplate;
+use App\Notifications\ApplicationDecided;
+use App\Notifications\ApplicationSubmitted;
+use App\Notifications\AppNotification;
+use App\Notifications\CampaignGoalReached;
+use App\Notifications\DonationReceived;
+use App\Notifications\WalkBookingCreated;
+use App\Notifications\WalkBookingDecided;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 /**
  * Демо-данные как на макетах этапа 3: 4 одобренных приюта + 1 на модерации, ~30 питомцев,
@@ -72,6 +80,7 @@ class DemoSeeder extends Seeder
             $this->seedApplications();
             $this->seedFavorites();
             $this->seedWalks();
+            $this->seedNotifications();
         });
     }
 
@@ -471,6 +480,64 @@ class DemoSeeder extends Seeder
         ]);
 
         WalkSlot::query()->each(fn (WalkSlot $slot) => $slot->recalculateBookedCount());
+    }
+
+    /**
+     * Уведомления для демо-кабинетов волонтёра и приюта «Дом лап» (этап 12). Пишутся прямо в таблицу,
+     * без отправки писем: тексты те же, что у настоящих уведомлений.
+     */
+    private function seedNotifications(): void
+    {
+        $domLap = $this->shelters['dom-lap'];
+        $owner = $domLap->owners()->first();
+
+        // Волонтёр: подтверждённая прогулка, заявка в работе, спасибо за пожертвование
+        $confirmed = $this->volunteer->walkBookings()->where('status', BookingStatus::Confirmed)->first();
+        if ($confirmed) {
+            $this->storeNotification($this->volunteer, new WalkBookingDecided($confirmed), now()->subHours(3));
+        }
+
+        $inReview = $this->volunteer->adoptionApplications()->where('status', ApplicationStatus::InReview)->first();
+        if ($inReview) {
+            $this->storeNotification($this->volunteer, new ApplicationDecided($inReview), now()->subHours(26));
+        }
+
+        $donation = $this->volunteer->donations()->where('status', PaymentStatus::Succeeded)->latest('paid_at')->first();
+        if ($donation) {
+            $this->storeNotification($this->volunteer, new DonationReceived($donation), now()->subDays(4), read: true);
+        }
+
+        // Приют: новые записи на выгул и заявки, собранный сбор
+        $pending = WalkBooking::query()->where('status', BookingStatus::Pending)
+            ->whereHas('slot', fn ($q) => $q->where('shelter_id', $domLap->id)->where('starts_at', '>', now()))
+            ->take(2)->get();
+        foreach ($pending as $i => $booking) {
+            $this->storeNotification($owner, new WalkBookingCreated($booking), now()->subMinutes(40 + $i * 90));
+        }
+
+        $new = AdoptionApplication::query()->where('status', ApplicationStatus::New)
+            ->whereHas('pet', fn ($q) => $q->where('shelter_id', $domLap->id))
+            ->take(2)->get();
+        foreach ($new as $i => $application) {
+            $this->storeNotification($owner, new ApplicationSubmitted($application), now()->subHours(5 + $i * 20));
+        }
+
+        $completed = $domLap->campaigns()->where('status', CampaignStatus::Completed)->first();
+        if ($completed) {
+            $this->storeNotification($owner, new CampaignGoalReached($completed, forShelter: true), now()->subDays(3), read: true);
+        }
+    }
+
+    private function storeNotification(User $user, AppNotification $notification, Carbon $at, bool $read = false): void
+    {
+        $user->notifications()->create([
+            'id' => (string) Str::uuid(),
+            'type' => $notification->kind(),
+            'data' => $notification->toArray($user),
+            'read_at' => $read ? $at->copy()->addHour() : null,
+            'created_at' => $at,
+            'updated_at' => $at,
+        ]);
     }
 
     /**

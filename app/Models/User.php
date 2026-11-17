@@ -25,6 +25,8 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
+    private ?int $unreadNotificationsCount = null;
+
     /** @var array<string, mixed> */
     protected $attributes = [
         'role' => 'volunteer',
@@ -94,6 +96,18 @@ class User extends Authenticatable
     public function donations(): HasMany
     {
         return $this->hasMany(Donation::class);
+    }
+
+    /** Непрочитанные уведомления — один запрос на запрос страницы (шапка и меню кабинета). */
+    public function unreadNotificationsCount(): int
+    {
+        return $this->unreadNotificationsCount ??= $this->unreadNotifications()->count();
+    }
+
+    /** Сбросить счётчик после «прочитать». */
+    public function forgetUnreadNotificationsCount(): void
+    {
+        $this->unreadNotificationsCount = null;
     }
 
     public function hasRole(Role ...$roles): bool

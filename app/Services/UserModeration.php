@@ -7,12 +7,17 @@ use App\Enums\CancelledBy;
 use App\Models\User;
 use App\Models\WalkBooking;
 use App\Models\WalkSlot;
+use App\Notifications\WalkBookingCancelled;
+use App\Notifications\WalkBookingDecided;
+use App\Support\Recipients;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 
 /**
  * Блокировка пользователей администратором. Заблокированному закрыт вход, а его будущие
- * активные записи на выгул отменяются (docs/product/roles.md) — места возвращаются в слоты.
+ * активные записи на выгул отменяются (docs/product/roles.md) — места возвращаются в слоты;
+ * волонтёру (письмом) и приютам сообщается об отмене.
  */
 class UserModeration
 {
@@ -26,6 +31,7 @@ class UserModeration
                 ->where('user_id', $user->getKey())
                 ->active()
                 ->whereHas('slot', fn (Builder $q) => $q->where('starts_at', '>', now()))
+                ->with('slot.shelter', 'pet')
                 ->get();
 
             foreach ($bookings as $booking) {
@@ -39,6 +45,12 @@ class UserModeration
 
             WalkSlot::query()->whereIn('id', $bookings->pluck('walk_slot_id')->unique())->get()
                 ->each(fn (WalkSlot $slot) => $slot->recalculateBookedCount());
+
+            foreach ($bookings as $booking) {
+                $booking->setRelation('user', $user);
+                $user->notify(new WalkBookingDecided($booking));
+                Notification::send(Recipients::shelterStaff($booking->slot->shelter), new WalkBookingCancelled($booking));
+            }
 
             return $bookings->count();
         });

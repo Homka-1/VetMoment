@@ -29,4 +29,7 @@ return [
     'time_step_minutes' => 15,
     'max_capacity' => 20,
     'max_weeks_ahead' => 8,
+
+    // Этап 12: напоминание о подтверждённой прогулке — за столько часов до начала (app:send-walk-reminders).
+    'reminder_hours' => 24,
 ];
