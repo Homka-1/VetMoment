@@ -176,6 +176,7 @@
 | shelter_comment | string(500) | — | причина отказа |
 | cancelled_by | enum | — | `user`, `shelter`, `system` |
 | confirmed_at / cancelled_at | datetime | — | |
+| reminder_sent_at | datetime | — | напоминание за сутки отправлено (этап 12) |
 
 **Правила бронирования** (реализуются в `App\Services\WalkBookingService`, этап 10):
 

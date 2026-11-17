@@ -213,6 +213,7 @@ erDiagram
         string cancelled_by "CancelledBy"
         timestamp confirmed_at
         timestamp cancelled_at
+        timestamp reminder_sent_at
     }
 ```
 
