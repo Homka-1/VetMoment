@@ -27,9 +27,8 @@
         PaymentStatus::Refunded => ['icon' => 'info', 'circle' => 'bg-info-bg text-info-fg', 'title' => 'Платёж возвращён'],
     };
 @endphp
-<x-layouts.app :title="$state['title']" canvas>
+<x-layouts.app :title="$state['title']" canvas noindex>
     <x-slot:head>
-        <meta name="robots" content="noindex">
         @if ($waiting)
             <meta http-equiv="refresh" content="5">
         @endif

@@ -122,7 +122,7 @@ class AdoptionApplications
      */
     public function closeForAdoptedPet(Pet $pet, ?AdoptionApplication $except = null): void
     {
-        $open = $pet->applications()->active()
+        $open = $pet->applications()->active()->with('user')
             ->when($except, fn ($q) => $q->whereKeyNot($except->getKey()))
             ->get();
 

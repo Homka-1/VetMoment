@@ -13,8 +13,8 @@
 @endphp
 <span {{ $attributes->class(['relative block shrink-0 overflow-hidden', $sizes[$size] ?? $sizes['md'], $tone]) }}>
     @if ($image)
-        <img src="{{ $image }}" alt="" loading="lazy" class="size-full object-cover">
+        <img src="{{ $image }}" alt="" loading="lazy" decoding="async" class="size-full object-cover">
     @else
-        <img src="{{ asset('images/illustrations/'.$art.'.svg') }}" alt="" class="absolute inset-x-0 bottom-0 mx-auto h-[88%] w-auto">
+        <img src="{{ asset('images/illustrations/'.$art.'.svg') }}" alt="" loading="lazy" decoding="async" class="absolute inset-x-0 bottom-0 mx-auto h-[88%] w-auto">
     @endif
 </span>

@@ -7,8 +7,7 @@
         ? ['Главная' => route('home'), 'Сборы' => route('campaigns.index'), $campaign->title => route('campaigns.show', $campaign), 'Пожертвование' => null]
         : ['Главная' => route('home'), 'Приюты' => Navigation::url('shelters.index', '/shelters'), $shelter->name => null];
 @endphp
-<x-layouts.app :title="$campaign ? 'Пожертвование — '.$campaign->title : $title" canvas>
-    <x-slot:head><meta name="robots" content="noindex"></x-slot:head>
+<x-layouts.app :title="$campaign ? 'Пожертвование — '.$campaign->title : $title" canvas noindex>
     <div class="page-container pt-6 pb-16 lg:pt-8 lg:pb-24">
         <x-breadcrumbs :items="$crumbs" />
 

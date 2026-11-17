@@ -1,5 +1,11 @@
 @use('App\Support\Navigation')
-{{-- Подвал (макет главной, этап 3): тёмная поверхность inverse, логотип для тёмного фона, три колонки ссылок. --}}
+@props(['guest' => false])
+{{-- Подвал (макет главной, этап 3): тёмная поверхность inverse, логотип для тёмного фона, три колонки ссылок.
+     Ссылки «Приютам» зависят от роли: никому не показываем раздел, который ответит 403. guest — без сессии и БД. --}}
+@php
+    $user = $guest ? null : auth()->user();
+    $partnerUrl = Navigation::partnerUrl($user);
+@endphp
 <footer class="bg-inverse text-ink-200">
     <div class="page-container grid gap-10 py-12 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr] lg:py-16">
         <div class="max-w-xs">
@@ -20,8 +26,12 @@
         <nav aria-labelledby="footer-shelters">
             <h2 id="footer-shelters" class="text-sm font-semibold text-white">Приютам</h2>
             <ul class="mt-4 grid gap-2.5 text-sm">
-                <li><a href="{{ route('cabinet.shelter-request') }}" class="hover:text-white hover:underline">Стать приютом-партнёром</a></li>
-                <li><a href="{{ route('shelter.dashboard') }}" class="hover:text-white hover:underline">Кабинет приюта</a></li>
+                @if ($partnerUrl)
+                    <li><a href="{{ $partnerUrl }}" class="hover:text-white hover:underline">Стать приютом-партнёром</a></li>
+                @endif
+                @if (! $user || $user->isShelterStaff())
+                    <li><a href="{{ route('shelter.dashboard') }}" class="hover:text-white hover:underline">Кабинет приюта</a></li>
+                @endif
                 <li><a href="{{ Navigation::url('shelters.index', '/shelters') }}" class="hover:text-white hover:underline">Все приюты</a></li>
             </ul>
         </nav>

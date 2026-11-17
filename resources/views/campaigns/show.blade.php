@@ -21,19 +21,8 @@
         return $local->greaterThan(now()->subDay()) ? $local->diffForHumans() : LocalTime::date($moment);
     };
 @endphp
-<x-layouts.app :title="$campaign->title.' — сбор приюта «'.$shelter->name.'»'" :description="$description">
-    <x-slot:head>
-        <meta property="og:type" content="article">
-        <meta property="og:title" content="{{ $campaign->title }}">
-        <meta property="og:description" content="{{ $description }}">
-        <meta property="og:url" content="{{ route('campaigns.show', $campaign) }}">
-        @if ($image)
-            <meta property="og:image" content="{{ $image }}">
-        @endif
-        @unless ($isPublic)
-            <meta name="robots" content="noindex">
-        @endunless
-    </x-slot:head>
+<x-layouts.app :title="$campaign->title.' — сбор приюта «'.$shelter->name.'»'" :description="$description"
+               type="article" :image="$image ?? $pet?->cover?->url()" :noindex="! $isPublic">
 
     <div @class(['page-container pt-6 lg:pt-8 lg:pb-24', 'pb-28' => $canDonate, 'pb-16' => ! $canDonate])>
         <x-breadcrumbs :items="['Главная' => route('home'), 'Сборы' => route('campaigns.index'), $campaign->title => null]" />
@@ -54,7 +43,7 @@
             <div class="grid min-w-0 content-start gap-6 lg:col-start-1">
                 <div @class(['relative aspect-[16/10] overflow-hidden rounded-lg md:aspect-[19/10]', $image ? 'bg-ink-100' : $art['bg']])>
                     @if ($image)
-                        <img src="{{ $image }}" alt="{{ $pet ? $pet->name.' — '.$campaign->title : '' }}" class="size-full object-cover">
+                        <img src="{{ $image }}" alt="{{ $pet ? $pet->name.' — '.$campaign->title : '' }}" fetchpriority="high" class="size-full object-cover">
                     @else
                         <img src="{{ $art['src'] }}" alt="" class="absolute inset-x-0 bottom-0 mx-auto h-[86%] w-auto">
                     @endif

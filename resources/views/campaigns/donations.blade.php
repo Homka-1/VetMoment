@@ -2,8 +2,7 @@
 @use('App\Support\Money')
 @use('App\Support\Plural')
 {{-- Все пожертвования сбора: имя или «Аноним», сумма, дата, комментарий (публичный список, roles.md). --}}
-<x-layouts.app :title="'Пожертвования — '.$campaign->title">
-    <x-slot:head><meta name="robots" content="noindex"></x-slot:head>
+<x-layouts.app :title="'Пожертвования — '.$campaign->title" noindex>
     <div class="page-container pt-6 pb-16 lg:pt-8 lg:pb-24">
         <x-breadcrumbs :items="['Главная' => route('home'), 'Сборы' => route('campaigns.index'), $campaign->title => route('campaigns.show', $campaign), 'Пожертвования' => null]" />
 

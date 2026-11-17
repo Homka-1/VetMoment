@@ -27,7 +27,7 @@
         @if ($image)
             <img src="{{ $image }}" alt="" loading="lazy" decoding="async" class="size-full object-cover">
         @else
-            <img src="{{ $art['src'] }}" alt="" class="absolute inset-x-0 bottom-0 mx-auto h-[90%] w-auto">
+            <img src="{{ $art['src'] }}" alt="" loading="lazy" decoding="async" class="absolute inset-x-0 bottom-0 mx-auto h-[90%] w-auto">
         @endif
         <x-badge :status="$badge" @class(['absolute top-3 left-3', 'border-0 bg-white! shadow-sm' => $badge !== CampaignStatus::Active]) />
     </div>

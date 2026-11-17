@@ -8,10 +8,8 @@
     $paragraphs = collect(preg_split('/\R{2,}/', (string) $shelter->description))->map(fn ($p) => trim($p))->filter();
     $visible = $shelter->isApproved();
 @endphp
-<x-layouts.app :title="$shelter->name" :description="Str::limit(strip_tags((string) $shelter->description), 150)">
-    <x-slot:head>
-        @unless ($visible)<meta name="robots" content="noindex">@endunless
-    </x-slot:head>
+<x-layouts.app :title="$shelter->name" :description="Str::limit(strip_tags((string) $shelter->description), 150)"
+               :image="$logo" :noindex="! $visible">
 
     <div class="page-container pt-6 pb-16 lg:pt-8 lg:pb-24">
         <x-breadcrumbs :items="['Главная' => route('home'), 'Приюты' => route('shelters.index'), $shelter->name => null]" />

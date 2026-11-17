@@ -2,13 +2,15 @@
 {{-- Шапка (UI-кит, артборд 05): пять разделов, активный подчёркнут бирочной полосой.
      Справа — «Войти» и жёлтая «Помочь»; после входа — уведомления со счётчиком и меню профиля.
      На телефоне (< lg) — логотип, поиск и кнопка меню (x-site.mobile-menu). --}}
+@props(['guest' => false])
 @php
+    // guest — шапка без обращения к сессии и БД (страницы 500/503: база может быть недоступна).
     $nav = Navigation::main();
-    $user = auth()->user();
+    $user = $guest ? null : auth()->user();
     $unread = $user ? $user->unreadNotificationsCount() : 0;
 @endphp
 <header class="sticky top-0 z-40 border-b border-subtle bg-white/95 backdrop-blur">
-    <div class="page-container flex h-header items-center gap-8 lg:h-header-lg">
+    <div class="page-container flex h-header items-center gap-3 lg:h-header-lg lg:gap-8">
         <x-logo />
 
         <nav aria-label="Основные разделы" class="hidden h-full lg:block">
@@ -27,14 +29,14 @@
             </ul>
         </nav>
 
-        <div class="ml-auto flex items-center gap-2 lg:gap-4">
-            @auth
+        <div class="ml-auto flex items-center gap-1 sm:gap-2 lg:gap-4">
+            @if ($user)
                 <a href="{{ Navigation::url('notifications.index', '/notifications') }}"
                    class="relative grid size-control place-items-center rounded-pill text-ink-900 hover:bg-ink-100"
                    aria-label="Уведомления{{ $unread ? ': непрочитанных '.$unread : '' }}">
                     <x-icon name="bell" />
                     @if ($unread)
-                        <span class="absolute top-1.5 right-1.5 grid h-5 min-w-5 place-items-center rounded-pill bg-danger-solid px-1 text-xs leading-none font-bold text-white ring-2 ring-white" aria-hidden="true">{{ $unread > 9 ? '9+' : $unread }}</span>
+                        <span class="absolute top-0.5 right-0 grid h-5 min-w-5 place-items-center rounded-pill bg-danger-solid px-1 text-xs leading-none font-bold text-white ring-2 ring-white" aria-hidden="true">{{ $unread > 9 ? '9+' : $unread }}</span>
                     @endif
                 </a>
 
@@ -62,7 +64,7 @@
                 <div class="hidden lg:block">
                     <x-button variant="donate" :href="Navigation::helpUrl()" icon="heart">Помочь</x-button>
                 </div>
-            @endauth
+            @endif
 
             <a href="{{ $nav[0]['href'] }}" class="grid size-control place-items-center rounded-pill hover:bg-ink-100 lg:hidden" aria-label="Найти питомца">
                 <x-icon name="search" />

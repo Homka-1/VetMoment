@@ -19,7 +19,7 @@
     <div class="flex items-start gap-4">
         <span class="grid size-14 shrink-0 place-items-center overflow-hidden rounded-pill bg-meadow-100 text-meadow-700">
             @if ($logo)
-                <img src="{{ $logo }}" alt="" class="size-full object-cover">
+                <img src="{{ $logo }}" alt="" loading="lazy" decoding="async" class="size-full object-cover">
             @else
                 <x-icon name="home" size="lg" />
             @endif

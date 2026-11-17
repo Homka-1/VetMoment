@@ -105,6 +105,19 @@ final class Navigation
         return $result;
     }
 
+    /**
+     * «Стать приютом-партнёром»: гостю — регистрация, волонтёру без приюта — заявка приюта.
+     * Сотруднику приюта и админу ссылка не нужна (null) — заявка для них закрыта политикой.
+     */
+    public static function partnerUrl(?User $user): ?string
+    {
+        if ($user === null) {
+            return route('register');
+        }
+
+        return $user->can('register', Shelter::class) ? route('cabinet.shelter-request') : null;
+    }
+
     /** URL маршрута, если он уже есть, иначе — адрес из карты сайта. */
     public static function url(string $route, string $fallbackPath): string
     {

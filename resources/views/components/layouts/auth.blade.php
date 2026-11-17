@@ -9,7 +9,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <x-site.head :title="$title" />
+    <x-site.head :title="$title" noindex />
 </head>
 <body class="min-h-dvh bg-page">
     <x-site.icon-sprite />

@@ -73,7 +73,8 @@ class CampaignController extends Controller
             'estimate' => Estimate::parse($campaign->description),
             'recent' => $recent,
             'canDonate' => Gate::allows('donate', $campaign),
-            'canManage' => $request->user()?->can('update', $campaign) ?? false,
+            // Кнопки ведут в кабинет приюта — только сотрудникам (админ модерирует из /admin).
+            'canManage' => $request->user()?->isShelterStaff() && $request->user()->can('update', $campaign),
             'prefill' => DonationPrefill::for($request),
         ]);
     }

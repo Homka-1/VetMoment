@@ -53,7 +53,8 @@ class ShelterController extends Controller
                 ->whereNotNull('published_at')
                 ->with(['attachments', 'campaign'])->latest('published_at')->limit(2)->get(),
             'slots' => WalkSlot::query()->upcoming()->where('shelter_id', $shelter->id)
-                ->where('starts_at', '<=', WalkSlot::horizonEndsAt())->limit(4)->get(),
+                ->where('starts_at', '<=', WalkSlot::horizonEndsAt())->limit(4)->get()
+                ->each->setRelation('shelter', $shelter),
         ]);
     }
 }

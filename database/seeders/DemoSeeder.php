@@ -13,6 +13,8 @@ use App\Enums\PetStatus;
 use App\Enums\ShelterMemberRole;
 use App\Enums\ShelterStatus;
 use App\Enums\WalkSlotStatus;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\SeoController;
 use App\Models\AdoptionApplication;
 use App\Models\Donation;
 use App\Models\DonationCampaign;
@@ -32,6 +34,7 @@ use App\Notifications\WalkBookingDecided;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -82,6 +85,11 @@ class DemoSeeder extends Seeder
             $this->seedWalks();
             $this->seedNotifications();
         });
+
+        // Главная и sitemap кэшируются (этап 13) — после пересоздания данных показываем новые цифры сразу.
+        foreach ([...HomeController::CACHE_KEYS, SeoController::SITEMAP_CACHE_KEY] as $key) {
+            Cache::forget($key);
+        }
     }
 
     private function seedUsers(): void

@@ -78,7 +78,8 @@ class PetController extends Controller
             'similar' => $similar,
             'applications' => $applications,
             'canApply' => $user === null || $user->can('apply', $pet),
-            'canManage' => $user?->can('update', $pet) ?? false,
+            // Кнопки ведут в кабинет приюта — только сотрудникам (админ модерирует из /admin).
+            'canManage' => $user?->isShelterStaff() && $user->can('update', $pet),
             'favorited' => $user !== null && $user->favoritePets()->whereKey($pet->getKey())->exists(),
             'favoriteIds' => $this->favoriteIds($request, $similar->pluck('id')->all()),
             'adoptionType' => ApplicationType::Adoption->value,

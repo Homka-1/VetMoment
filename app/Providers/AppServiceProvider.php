@@ -17,6 +17,7 @@ use App\Policies\UserPolicy;
 use App\Policies\WalkBookingPolicy;
 use App\Policies\WalkSlotPolicy;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Gate;
@@ -41,6 +42,10 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
         $this->registerRateLimiters();
+
+        // N+1: вне production ленивая загрузка связи у модели из списка — исключение (тесты и разработка
+        // ловят забытый with()). В production — молча догружаем, сайт не падает.
+        Model::preventLazyLoading(! $this->app->isProduction());
 
         // Требования к паролю: не короче 8 символов (docs/product/data-requirements.md).
         Password::defaults(fn () => Password::min(8)->max(255));

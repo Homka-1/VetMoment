@@ -19,7 +19,7 @@ class DonationController extends Controller
         $total = (int) $user->donations()->where('status', PaymentStatus::Succeeded)->sum('amount');
 
         return view('cabinet.donations', [
-            'donations' => $user->donations()->with(['campaign', 'shelter'])->latest('created_at')->latest('id')->paginate(20),
+            'donations' => $user->donations()->with(['campaign.shelter', 'shelter'])->latest('created_at')->latest('id')->paginate(20),
             'total' => $total,
         ]);
     }

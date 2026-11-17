@@ -13,7 +13,7 @@
 @endphp
 <span {{ $attributes->class(['inline-grid shrink-0 place-items-center overflow-hidden rounded-pill font-bold', $sizes[$size] ?? $sizes['md'], $tone => ! $src]) }} aria-hidden="true">
     @if ($src)
-        <img src="{{ $src }}" alt="" class="size-full object-cover">
+        <img src="{{ $src }}" alt="" loading="lazy" decoding="async" class="size-full object-cover">
     @else
         {{ $initials }}
     @endif

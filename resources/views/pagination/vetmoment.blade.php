@@ -7,8 +7,8 @@
         <ul class="flex flex-wrap items-center gap-2">
             <li>
                 @if ($paginator->onFirstPage())
-                    <span class="{{ $box }} border-ink-200 text-ink-400" aria-disabled="true" aria-label="Предыдущая страница">
-                        <x-icon name="chevron-left" />
+                    <span class="{{ $box }} relative border-ink-200 text-ink-400">
+                        <x-icon name="chevron-left" /><span class="sr-only">Предыдущей страницы нет</span>
                     </span>
                 @else
                     <a href="{{ $paginator->previousPageUrl() }}" rel="prev" class="{{ $box }} border-ink-900 hover:bg-ink-50" aria-label="Предыдущая страница">
@@ -41,8 +41,8 @@
                         <x-icon name="chevron-right" />
                     </a>
                 @else
-                    <span class="{{ $box }} border-ink-200 text-ink-400" aria-disabled="true" aria-label="Следующая страница">
-                        <x-icon name="chevron-right" />
+                    <span class="{{ $box }} relative border-ink-200 text-ink-400">
+                        <x-icon name="chevron-right" /><span class="sr-only">Следующей страницы нет</span>
                     </span>
                 @endif
             </li>

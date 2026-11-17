@@ -9,7 +9,7 @@
     $user = auth()->user();
     $items = Navigation::cabinet($user);
 @endphp
-<x-layouts.app :title="$title" canvas>
+<x-layouts.app :title="$title" canvas noindex>
     <div class="page-container py-6 lg:grid lg:grid-cols-[var(--spacing-sidebar)_1fr] lg:gap-10 lg:py-10">
         <aside class="lg:sticky lg:top-[calc(var(--spacing-header-lg)+40px)] lg:self-start">
             <div class="hidden items-center gap-3 lg:flex">

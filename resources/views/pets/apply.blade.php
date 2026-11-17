@@ -10,7 +10,7 @@
         $options[ApplicationType::Guardianship->value] = ['title' => 'Взять под опеку', 'text' => $pet->name.' живёт в приюте, вы помогаете'];
     }
 @endphp
-<x-layouts.app :title="'Заявка на питомца '.$pet->name">
+<x-layouts.app :title="'Заявка на питомца '.$pet->name" noindex>
     <div class="page-container pt-6 pb-16 lg:pt-8 lg:pb-24">
         <x-breadcrumbs :items="['Питомцы' => route('pets.index'), $pet->name => route('pets.show', $pet), 'Заявка' => null]" />
 

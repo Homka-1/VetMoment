@@ -1,6 +1,6 @@
 @use('App\Enums\WalkSlotState')
 {{-- Витрина UI-кита (только local/testing). Разделы повторяют артборды design/ui-kit.svg. --}}
-<x-layouts.app title="Витрина UI-кита">
+<x-layouts.app title="Витрина UI-кита" noindex>
     @php
         $sections = [
             'foundations' => 'Основы',

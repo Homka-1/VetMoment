@@ -32,8 +32,7 @@
         default => null,
     };
 @endphp
-<x-layouts.app title="Подтверждение записи на выгул">
-    <x-slot:head><meta name="robots" content="noindex"></x-slot:head>
+<x-layouts.app title="Подтверждение записи на выгул" noindex>
 
     <div class="page-container pt-6 pb-16 lg:pt-8 lg:pb-24">
         <x-breadcrumbs :items="['Запись на выгул' => $backUrl, 'Подтверждение' => null]" />

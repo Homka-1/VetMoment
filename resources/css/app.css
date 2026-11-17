@@ -370,6 +370,13 @@
         animation: vm-pulse 1.6s var(--ease-in-out) infinite;
     }
 
+    /* Бирка с кодом ошибки: один раз качнулась на ошейнике при загрузке — единственная «сама по себе»
+       анимация сайта; при prefers-reduced-motion гасится общим правилом выше. */
+    .vm-tag-swing {
+        transform-origin: 50% 0;
+        animation: vm-tag-swing 1.4s var(--ease-out) 0.2s both;
+    }
+
     /* Прогресс сбора: рост ширины после пожертвования */
     .vm-progress-fill {
         transition: width 320ms var(--ease-out);
@@ -400,5 +407,23 @@
 @keyframes vm-pulse {
     50% {
         opacity: 0.55;
+    }
+}
+
+@keyframes vm-tag-swing {
+    0% {
+        transform: rotate(0);
+    }
+    20% {
+        transform: rotate(14deg);
+    }
+    45% {
+        transform: rotate(-8deg);
+    }
+    70% {
+        transform: rotate(4deg);
+    }
+    100% {
+        transform: rotate(0);
     }
 }

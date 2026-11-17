@@ -1,6 +1,7 @@
 @use('App\Support\Navigation')
 {{-- Мобильное меню: полноэкранный лист на <dialog> (UI-кит, артборд 05). Открывается кнопкой в шапке. --}}
-@php($user = auth()->user())
+@props(['guest' => false])
+@php($user = $guest ? null : auth()->user())
 <dialog id="mobile-menu" aria-label="Меню"
         class="vm-sheet m-0 h-dvh max-h-none w-full max-w-none bg-white p-0 text-primary backdrop:bg-transparent lg:hidden">
     <div class="flex min-h-full flex-col px-4 pb-6">
@@ -24,7 +25,7 @@
             </ul>
         </nav>
 
-        @auth
+        @if ($user)
             <div class="mt-6 flex items-center gap-3">
                 <x-avatar :name="$user->name" size="lg" />
                 <div class="min-w-0">
@@ -32,11 +33,11 @@
                     <p class="text-sm text-muted">{{ $user->role->label() }}</p>
                 </div>
             </div>
-        @endauth
+        @endif
 
         <div class="mt-auto grid gap-3 pt-8">
             <x-button variant="donate" size="lg" :href="Navigation::helpUrl()" icon="heart" block>Помочь</x-button>
-            @auth
+            @if ($user)
                 <x-button variant="secondary" size="lg" :href="route($user->homeRoute())" icon="user" block>Личный кабинет</x-button>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
@@ -44,7 +45,7 @@
                 </form>
             @else
                 <x-button variant="secondary" size="lg" :href="route('login')" block>Войти</x-button>
-            @endauth
+            @endif
         </div>
     </div>
 </dialog>

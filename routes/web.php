@@ -28,6 +28,7 @@ use App\Http\Controllers\Pets\AdoptionApplicationController;
 use App\Http\Controllers\Pets\FavoriteController;
 use App\Http\Controllers\Pets\PetController;
 use App\Http\Controllers\Public\ShelterController as PublicShelterController;
+use App\Http\Controllers\SeoController;
 use App\Http\Controllers\Shelter\ApplicationController as ShelterApplicationsController;
 use App\Http\Controllers\Shelter\CampaignController as ShelterCampaignController;
 use App\Http\Controllers\Shelter\CampaignReportController;
@@ -49,6 +50,10 @@ Route::get('/', HomeController::class)->name('home');
 // Информационные страницы.
 Route::view('/help', 'help')->name('help');
 Route::view('/privacy', 'privacy')->name('privacy');
+
+// SEO: карта сайта и правила для поисковиков (robots.txt — маршрутом, чтобы указать адрес sitemap).
+Route::get('/sitemap.xml', [SeoController::class, 'sitemap'])->name('sitemap');
+Route::get('/robots.txt', [SeoController::class, 'robots'])->name('robots');
 
 // Приюты: список и страница приюта.
 Route::get('/shelters', [PublicShelterController::class, 'index'])->name('shelters.index');

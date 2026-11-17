@@ -1,5 +1,6 @@
 @use('App\Support\Navigation')
 {{-- «Как помочь»: три пути, частые вопросы и как приюту стать партнёром. --}}
+@php($partnerUrl = Navigation::partnerUrl(auth()->user()))
 <x-layouts.app title="Как помочь" description="Как помочь бездомным животным: забрать питомца, пожертвовать на сбор или погулять с собакой в приюте.">
     <div class="page-container pt-6 pb-16 lg:pt-8 lg:pb-24">
         <x-breadcrumbs :items="['Главная' => route('home'), 'Как помочь' => null]" />
@@ -47,7 +48,9 @@
             <p class="mt-3 max-w-2xl text-secondary">
                 Зарегистрируйтесь, подайте заявку и после проверки публикуйте анкеты, открывайте сборы и принимайте волонтёров на выгул. Проверка занимает 1–2 рабочих дня.
             </p>
-            <x-button class="mt-6" icon="home" :href="auth()->check() ? route('cabinet.shelter-request') : route('register')">Стать приютом-партнёром</x-button>
+            @if ($partnerUrl)
+                <x-button class="mt-6" icon="home" :href="$partnerUrl">Стать приютом-партнёром</x-button>
+            @endif
         </section>
     </div>
 </x-layouts.app>

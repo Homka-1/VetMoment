@@ -29,19 +29,8 @@
     $showApply = $canApply && ! $isAdopted;
     $description = Str::limit($pet->fullSummary().'. '.$pet->character, 155);
 @endphp
-<x-layouts.app :title="$pet->name.' — '.mb_strtolower($pet->species->label()).' из приюта «'.$shelter->name.'»'" :description="$description">
-    <x-slot:head>
-        <meta property="og:type" content="article">
-        <meta property="og:title" content="{{ $pet->name }} — {{ $pet->status->label() }}">
-        <meta property="og:description" content="{{ $description }}">
-        <meta property="og:url" content="{{ route('pets.show', $pet) }}">
-        @if ($photos)
-            <meta property="og:image" content="{{ $photos[0]['src'] }}">
-        @endif
-        @unless ($isPublic)
-            <meta name="robots" content="noindex">
-        @endunless
-    </x-slot:head>
+<x-layouts.app :title="$pet->name.' — '.mb_strtolower($pet->species->label()).' из приюта «'.$shelter->name.'»'" :description="$description"
+               type="article" :image="$photos[0]['src'] ?? null" :noindex="! $isPublic">
 
     <div @class(['page-container pt-6 lg:pt-8 lg:pb-24', 'pb-28' => $showApply, 'pb-16' => ! $showApply])>
         <x-breadcrumbs :items="['Главная' => route('home'), 'Питомцы' => route('pets.index'), $pet->name => null]" />

@@ -12,7 +12,7 @@
 @if ($items)
     <div {{ $attributes->class('grid gap-3') }} data-gallery>
         <div class="relative aspect-square overflow-hidden rounded-lg bg-ink-100 md:aspect-[4/3]">
-            <img src="{{ $items[0]['src'] }}" alt="{{ $items[0]['alt'] }}" class="size-full object-cover" data-gallery-main>
+            <img src="{{ $items[0]['src'] }}" alt="{{ $items[0]['alt'] }}" class="size-full object-cover" fetchpriority="high" data-gallery-main>
             @if ($total > 1)
                 <p class="absolute right-4 bottom-4 inline-flex h-8 items-center gap-1.5 rounded-pill bg-white px-3 text-sm font-semibold shadow-sm tabular-nums">
                     <x-icon name="camera" size="sm" />

@@ -1,4 +1,6 @@
+@use('App\Support\Navigation')
 {{-- Приюты-партнёры: проверенные приюты с цифрами; фильтр по городу. --}}
+@php($partnerUrl = Navigation::partnerUrl(auth()->user()))
 <x-layouts.app title="Приюты" description="Проверенные приюты Казахстана: питомцы, сборы и выгул собак. Выберите приют рядом с вами.">
     <div class="page-container pt-6 pb-16 lg:pt-8 lg:pb-24">
         <x-breadcrumbs :items="['Главная' => route('home'), 'Приюты' => null]" />
@@ -18,7 +20,9 @@
         @if ($shelters->isEmpty())
             <x-empty-state class="mt-8" title="Приютов пока нет" illustration="dog-caramel">
                 Первые приюты появятся после проверки. Если вы представляете приют, подайте заявку — это бесплатно.
-                <x-slot:action><x-button icon="home" :href="auth()->check() ? route('cabinet.shelter-request') : route('register')">Стать приютом-партнёром</x-button></x-slot:action>
+                @if ($partnerUrl)
+                    <x-slot:action><x-button icon="home" :href="$partnerUrl">Стать приютом-партнёром</x-button></x-slot:action>
+                @endif
             </x-empty-state>
         @else
             <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">

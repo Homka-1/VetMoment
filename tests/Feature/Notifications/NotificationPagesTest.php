@@ -83,6 +83,12 @@ class NotificationPagesTest extends TestCase
         $html = (string) $mail->render();
         $this->assertStringContainsString('«Дом лап»', $html);
         $this->assertStringContainsString('С заботой о хвостатых', $html);
+
+        // Фирменный шаблон (этап 13): логотип PNG, цвета токенов, подвал без «All rights reserved».
+        $this->assertStringContainsString('images/brand/logo-email.png', $html);
+        $this->assertStringContainsString('#1D2B4F', $html);
+        $this->assertStringContainsString('личном кабинете', $html);
+        $this->assertStringNotContainsString('Laravel', $html);
     }
 
     public function test_notifications_page_lists_and_marks_read_on_open(): void

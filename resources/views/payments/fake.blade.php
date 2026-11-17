@@ -1,7 +1,6 @@
 @use('App\Support\Money')
 {{-- Демо-страница «банка» (FakePaymentGateway). В настоящем режиме здесь была бы страница провайдера. --}}
-<x-layouts.app title="Оплата пожертвования — демо" canvas>
-    <x-slot:head><meta name="robots" content="noindex"></x-slot:head>
+<x-layouts.app title="Оплата пожертвования — демо" canvas noindex>
     <div class="page-container py-10 lg:py-20">
         <section class="mx-auto grid max-w-[480px] gap-6 rounded-lg border border-subtle bg-raised p-6 sm:p-8" aria-labelledby="bank-title">
             <x-alert tone="warning" title="Учебная страница банка">

@@ -21,8 +21,7 @@
         $view['title'] = 'Прогулка прошла';
     }
 @endphp
-<x-layouts.app :title="$view['title']" canvas>
-    <x-slot:head><meta name="robots" content="noindex"></x-slot:head>
+<x-layouts.app :title="$view['title']" canvas noindex>
 
     <div class="page-container py-10 lg:py-16">
         <section class="mx-auto grid max-w-[640px] gap-6 rounded-lg border border-subtle bg-raised px-5 py-8 sm:px-10 sm:py-10" aria-labelledby="booking-title">
