@@ -5,7 +5,16 @@
 Стек: Laravel 13 (PHP 8.4), Blade, Tailwind CSS 4 + Vite, PostgreSQL 15, Docker Compose.
 План разработки и статусы этапов — [`docs/PLAN.md`](docs/PLAN.md).
 
-> Проект в разработке: сейчас готова техническая основа (этап 4). Страницы сайта появятся с этапа 7.
+Что внутри: каталог питомцев с фильтрами и заявками «Хочу забрать», сборы с онлайн-пожертвованием (демо-банк) и отчётами,
+запись волонтёров на выгул по слотам, кабинеты волонтёра, приюта и администратора, уведомления на сайте и по почте.
+
+| Документ | О чём |
+|----------|-------|
+| [`docs/architecture/overview.md`](docs/architecture/overview.md) | архитектура: слои, модули, роли, фоновые задачи, безопасность, тесты |
+| [`docs/architecture/er.md`](docs/architecture/er.md) | модель данных (ER-диаграмма) |
+| [`docs/deploy.md`](docs/deploy.md) | запуск на сервере: домен, HTTPS, почта, резервные копии |
+| [`docs/windows-run.md`](docs/windows-run.md) | приёмка запуска на Windows: что проверено и чек-лист |
+| [`docs/product/`](docs/product/), [`docs/design/`](docs/design/) | бриф, роли, сценарии, карта сайта; дизайн-концепция и токены |
 
 ---
 
@@ -99,6 +108,10 @@ docker compose down -v
 
 - **После обновления кода сайт не изменился** — пересоберите образ: `start.bat` (он всегда запускает
   `docker compose up -d --build`).
+- **Открываете сайт с другого устройства** (по IP компьютера в локальной сети) — работает, фото тоже; ссылки в
+  письмах и sitemap всё равно ведут на `localhost`.
+- Подробный чек-лист и типичные проблемы Windows (WSL 2, виртуализация, прокси, место на диске) —
+  [`docs/windows-run.md`](docs/windows-run.md).
 
 ---
 
@@ -123,7 +136,7 @@ docker compose down -v
    ```
 
    ```bash
-   type nul > database\database.sqlite
+   php -r "touch('database/database.sqlite');"
    ```
 
    ```bash
@@ -203,11 +216,14 @@ docker compose logs -f app queue scheduler
 | `docker-compose.dev.yml` | режим разработки: bind-mount кода, `vite`, `mailpit`, порт БД наружу |
 | `docker/start.sh` | точка входа: `.env` из примера, `APP_KEY` (хранится в томе `storage`), ожидание БД, миграции, демо-данные при пустой базе, `storage:link`, кеш конфигурации |
 | `start.bat` / `stop.bat` | запуск и остановка на Windows двойным кликом |
+| `docker-compose.prod.yml`, `docker/Caddyfile`, `deploy.env.example` | запуск на сервере: домен, HTTPS (Caddy), пароль БД, SMTP, без демо-данных — [`docs/deploy.md`](docs/deploy.md) |
 | `.env.example` | настройки для Docker (PostgreSQL) |
 | `.env.sqlite.example` | настройки для запуска без Docker (SQLite) |
 
 Переменные, которые можно задать перед запуском: `APP_PORT` (порт сайта, по умолчанию `8000`),
 `APP_DEBUG` (`true` — подробные ошибки), `DB_PORT` (порт PostgreSQL в режиме разработки).
+Docker Compose берёт их из окружения или из файла `.env` в папке проекта; `APP_ENV` в режиме запуска всегда `production`
+(чтобы `.env` от запасного способа не переключил Docker в режим разработки).
 
 Платежи (`config/payments.php`, по умолчанию менять ничего не нужно): `PAYMENT_GATEWAY` — `fake` (демо-банк) или
 `cloudpayments_kz` (заготовка драйвера, на реальном API не проверялась; нужны `CLOUDPAYMENTS_PUBLIC_ID` и
@@ -236,6 +252,66 @@ docker compose exec app php artisan cache:clear
 
 - Картинка для шаринга (`public/images/og-default.png`) и логотип для писем пересобираются скриптом
   `node design/tools/og-image.mjs` (нужен только при смене айдентики).
+
+---
+
+## Тесты и проверки
+
+```bash
+docker compose exec app php artisan test
+```
+
+(в режиме разработки; без Docker — `php artisan test` в папке проекта). Тесты идут на SQLite в памяти, CI
+(`.github/workflows/ci.yml`) дополнительно гоняет их на PostgreSQL 15, проверяет стиль (Pint), сборку фронтенда и
+запуск `docker compose up` с нуля. Стиль кода:
+
+```bash
+docker compose exec app ./vendor/bin/pint --test
+```
+
+Браузерная smoke-проверка работающего сайта с демо-данными (обход 45 страниц под всеми ролями: коды ответов, ошибки
+консоли и политики CSP, внешние запросы, горизонтальная прокрутка на 360 px; сквозные сценарии «пожертвование → демо-банк»,
+«заявка на питомца», «запись на выгул → подтверждение приютом → уведомление → отмена»). Нужны Node.js и Playwright:
+
+```bash
+npm i --no-save playwright
+```
+
+```bash
+npx playwright install chromium
+```
+
+```bash
+node tests/browser/smoke.mjs
+```
+
+Другой адрес — переменная `BASE_URL`, скриншоты 1440 и 390 px в `docs/screenshots/stage-14/` — флаг `--screenshots`.
+Сценарии меняют данные (свежая база — `docker compose down -v`); вход ограничен 10 попытками в минуту, поэтому
+запускайте не чаще раза в минуту.
+
+## Запуск на сервере
+
+Коротко: `deploy.env` из `deploy.env.example` (домен, пароль БД, почта), затем
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.prod.yml --env-file deploy.env --profile https up -d --build --wait
+```
+
+и `php artisan app:create-admin` для первого администратора. Подробно, с обновлением и резервными копиями, —
+[`docs/deploy.md`](docs/deploy.md).
+
+## Безопасность
+
+CSRF во всех формах, экранирование вывода, проверка загрузок по содержимому (только JPG/PNG/WebP), политики доступа
+на каждый объект, лимиты частоты на вход, регистрацию, формы и webhook, заголовки `Content-Security-Policy`,
+`X-Frame-Options`, `X-Content-Type-Options`, HSTS на HTTPS; в `/storage` не выполняется PHP. Секретов в репозитории нет.
+Проверка зависимостей:
+
+```bash
+docker compose exec app composer audit
+```
+
+Подробно — раздел «Безопасность» в [`docs/architecture/overview.md`](docs/architecture/overview.md).
 
 ---
 
