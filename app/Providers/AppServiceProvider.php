@@ -18,6 +18,7 @@ use App\Policies\WalkBookingPolicy;
 use App\Policies\WalkSlotPolicy;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Middleware\TrustProxies;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Gate;
@@ -53,6 +54,13 @@ class AppServiceProvider extends ServiceProvider
         // Пагинация в стиле UI-кита (resources/views/pagination/vetmoment.blade.php).
         Paginator::defaultView('pagination.vetmoment');
         Paginator::defaultSimpleView('pagination.vetmoment');
+
+        // За HTTPS-прокси (Caddy, nginx, балансировщик): доверяем X-Forwarded-Proto/For от адресов из
+        // TRUSTED_PROXIES, чтобы ссылки, secure-cookie и HSTS видели настоящий https (docs/deploy.md).
+        $proxies = config('security.trusted_proxies');
+        if (is_string($proxies) && $proxies !== '') {
+            TrustProxies::at($proxies === '*' ? '*' : array_map('trim', explode(',', $proxies)));
+        }
     }
 
     private function registerPolicies(): void
@@ -85,5 +93,8 @@ class AppServiceProvider extends ServiceProvider
         // Обычные формы (заявки, бронирования, пожертвования): на пользователя или IP гостя.
         RateLimiter::for('forms', fn (Request $request) => Limit::perMinute(10)
             ->by($request->user()?->getAuthIdentifier() ?? $request->ip()));
+
+        // Webhook платёжного провайдера: подлинность — подписью, лимит защищает от перебора и флуда.
+        RateLimiter::for('webhooks', fn (Request $request) => Limit::perMinute(120)->by($request->ip()));
     }
 }

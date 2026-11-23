@@ -2,12 +2,15 @@
 #   docker compose up -d --build   →   http://localhost:8000
 # Код и собранные ассеты — внутри образа (без bind-mount), порт БД наружу не открыт.
 # Режим разработки: docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+# Сервер (деплой): docker-compose.prod.yml + deploy.env — см. docs/deploy.md
 
 name: vetmoment
 
 x-app-env: &app-env
     APP_NAME: VetMoment
-    APP_ENV: ${APP_ENV:-production}
+    # Не из переменной: compose подставляет ${...} из файла .env в папке проекта, а после запасного
+    # способа (Herd) там APP_ENV=local. Режим разработки задаёт local в docker-compose.dev.yml.
+    APP_ENV: production
     APP_DEBUG: ${APP_DEBUG:-false}
     APP_URL: http://localhost:${APP_PORT:-8000}
     APP_PORT: ${APP_PORT:-8000}
@@ -23,6 +26,8 @@ x-app-env: &app-env
     SESSION_DRIVER: database
     CACHE_STORE: database
     MAIL_MAILER: log
+    # Демо-данные при первом запуске (пустая база). На сервере — false (docker-compose.prod.yml).
+    SEED_DEMO: "true"
 
 services:
     app:

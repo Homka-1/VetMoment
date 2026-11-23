@@ -92,7 +92,7 @@ Route::controller(DonationController::class)->group(function () {
 // Платёжный слой: демо-«банк» FakePaymentGateway и webhook провайдеров (без CSRF — см. bootstrap/app.php).
 Route::get('/payments/fake/{donation}', [FakePaymentController::class, 'show'])->name('payments.fake.show');
 Route::post('/payments/fake/{donation}', [FakePaymentController::class, 'pay'])->middleware('throttle:forms')->name('payments.fake.pay');
-Route::post('/payments/webhook/{provider}', WebhookController::class)->name('payments.webhook');
+Route::post('/payments/webhook/{provider}', WebhookController::class)->middleware('throttle:webhooks')->name('payments.webhook');
 
 // --- Запись на выгул: приют и время → подтверждение → запись ----------------------------------
 Route::get('/walks', [WalkController::class, 'index'])->name('walks.index');

@@ -34,4 +34,5 @@ mockup
 .phpunit.cache
 .phpunit.result.cache
 docker-compose*.yml
+deploy.env*
 *.bat

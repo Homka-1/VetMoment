@@ -1,11 +1,19 @@
 <?php
 
+use App\Enums\Role;
+use App\Models\User;
+use App\Rules\KazakhPhone;
 use App\Services\DonationPayments;
 use App\Services\WalkBookingService;
+use App\Support\Phone;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schedule;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 
 /*
 | Служебные команды для автоматического первого запуска (используются в start.sh).
@@ -50,6 +58,50 @@ Artisan::command('app:seed-if-empty', function () {
 
     return $this->call('db:seed', ['--force' => true]);
 })->purpose('Заполнить базу демо-данными, если она пустая');
+
+/*
+| Первый администратор на «боевом» сервере, где демо-данные не загружаются (SEED_DEMO=false, docs/deploy.md).
+| Пароль спрашивается скрытым вводом; для автоматизации — переменная окружения ADMIN_PASSWORD.
+*/
+
+Artisan::command('app:create-admin
+    {login : Логин (латиница, цифры, _ . -)}
+    {--name=Администратор : Имя}
+    {--phone= : Мобильный телефон +7 7XX XXX XX XX}
+    {--email= : Почта (для сброса пароля)}', function () {
+    $data = [
+        'login' => Str::lower(trim((string) $this->argument('login'))),
+        'name' => trim((string) $this->option('name')),
+        'phone' => Phone::normalize($this->option('phone')) ?? (string) $this->option('phone'),
+        'email' => Str::lower(trim((string) $this->option('email'))),
+        'password' => (string) (env('ADMIN_PASSWORD') ?: $this->secret('Пароль (не короче 8 символов)')),
+    ];
+
+    $validator = Validator::make($data, [
+        'login' => ['required', 'string', 'min:3', 'max:32', 'regex:/^[a-z0-9_.\-]+$/', Rule::unique('users', 'login')],
+        'name' => ['required', 'string', 'max:100'],
+        'phone' => ['required', 'string', new KazakhPhone, Rule::unique('users', 'phone')],
+        'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')],
+        'password' => ['required', 'string', Password::defaults()],
+    ]);
+
+    if ($validator->fails()) {
+        foreach ($validator->errors()->all() as $message) {
+            $this->error($message);
+        }
+
+        return 1;
+    }
+
+    $user = new User($validator->validated());
+    $user->role = Role::Admin;
+    $user->email_verified_at = now();
+    $user->save();
+
+    $this->info("Администратор {$user->login} создан. Вход: ".url('/login'));
+
+    return 0;
+})->purpose('Создать администратора (для сервера без демо-данных)');
 
 /*
 | Пожертвования (этап 9). Запускаются по расписанию — см. конец файла.

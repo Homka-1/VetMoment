@@ -1,0 +1,21 @@
+# VetMoment: HTTPS-прокси перед контейнером app (docker-compose.prod.yml, профиль https).
+# Сертификат Let's Encrypt Caddy получает сам: домен APP_DOMAIN должен указывать на сервер,
+# порты 80 и 443 — открыты.
+{$APP_DOMAIN} {
+	encode zstd gzip
+
+	# Фото до 10 штук по 8 МБ в одной анкете (как post_max_size в образе)
+	request_body {
+		max_size 100MB
+	}
+
+	reverse_proxy app:80
+
+	header {
+		-Server
+	}
+}
+
+www.{$APP_DOMAIN} {
+	redir https://{$APP_DOMAIN}{uri} permanent
+}

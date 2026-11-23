@@ -58,7 +58,12 @@ case "$ROLE" in
 
         php artisan app:wait-for-db --timeout=120
         php artisan migrate --force
-        php artisan app:seed-if-empty
+        # Демо-данные — только при пустой базе и если не выключены (на сервере: SEED_DEMO=false, docs/deploy.md)
+        if [ "${SEED_DEMO:-true}" = "true" ]; then
+            php artisan app:seed-if-empty
+        else
+            log "SEED_DEMO=false — демо-данные не загружаем"
+        fi
 
         if [ ! -e public/storage ]; then
             php artisan storage:link

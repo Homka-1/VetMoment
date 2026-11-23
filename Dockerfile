@@ -41,6 +41,20 @@ RUN a2enmod rewrite headers \
     && sed -ri -e 's!/var/www/!/var/www/html/public!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf \
     && echo 'ServerName localhost' > /etc/apache2/conf-available/servername.conf \
     && a2enconf servername \
+    # Безопасность (этап 14): не раскрывать версию Apache; загруженные файлы /storage — только как файлы
+    # (без угадывания типа, без исполнения PHP, без встраивания в чужие сайты). Имя zz- — чтобы
+    # перекрыть стандартный security.conf, который подключается раньше по алфавиту.
+    && printf '%s\n' 'ServerTokens Prod' 'ServerSignature Off' 'TraceEnable Off' \
+        '<Location "/storage/">' \
+        '    Header always set X-Content-Type-Options "nosniff"' \
+        '    Header always set X-Frame-Options "SAMEORIGIN"' \
+        '    Header always set Content-Security-Policy "default-src '"'"'none'"'"'; img-src '"'"'self'"'"'; sandbox"' \
+        '</Location>' \
+        '<LocationMatch "^/storage/.*\.(php[0-9]?|phtml|phar)$">' \
+        '    Require all denied' \
+        '</LocationMatch>' \
+        > /etc/apache2/conf-available/zz-vetmoment-security.conf \
+    && a2enconf zz-vetmoment-security \
     && cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     && printf 'upload_max_filesize=10M\npost_max_size=100M\nmax_file_uploads=20\nmemory_limit=384M\nexpose_php=Off\n' \
         > "$PHP_INI_DIR/conf.d/vetmoment.ini"

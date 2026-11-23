@@ -1,0 +1,66 @@
+# VetMoment — запуск на сервере (дополнение к docker-compose.yml). Подробно — docs/deploy.md.
+#   cp deploy.env.example deploy.env    (заполнить домен, пароль БД, почту)
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml --env-file deploy.env --profile https up -d --build
+# Отличия от локального запуска: настоящий домен и HTTPS (Caddy, сертификат Let's Encrypt),
+# пароль БД и почта из deploy.env, без демо-данных, сайт не открыт наружу мимо Caddy.
+
+x-prod-env: &prod-env
+    APP_URL: https://${APP_DOMAIN:?Укажите APP_DOMAIN в deploy.env}
+    APP_DEBUG: "false"
+    LOG_LEVEL: ${LOG_LEVEL:-warning}
+    DB_PASSWORD: ${DB_PASSWORD:?Укажите DB_PASSWORD в deploy.env}
+    SEED_DEMO: ${SEED_DEMO:-false}
+    # Caddy в той же сети compose: доверяем его X-Forwarded-Proto, чтобы Laravel видел https
+    TRUSTED_PROXIES: ${TRUSTED_PROXIES:-*}
+    SESSION_SECURE_COOKIE: "true"
+    MAIL_MAILER: ${MAIL_MAILER:-smtp}
+    MAIL_SCHEME: ${MAIL_SCHEME:-smtps}
+    MAIL_HOST: ${MAIL_HOST:-}
+    MAIL_PORT: ${MAIL_PORT:-465}
+    MAIL_USERNAME: ${MAIL_USERNAME:-}
+    MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+    MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS:-noreply@vetmoment.kz}
+    PAYMENT_GATEWAY: ${PAYMENT_GATEWAY:-fake}
+    CLOUDPAYMENTS_PUBLIC_ID: ${CLOUDPAYMENTS_PUBLIC_ID:-}
+    CLOUDPAYMENTS_API_SECRET: ${CLOUDPAYMENTS_API_SECRET:-}
+
+services:
+    app:
+        environment: *prod-env
+        # Только для Caddy и проверок с самого сервера; снаружи сайт открывается через 80/443
+        ports: !override
+            - "127.0.0.1:${APP_PORT:-8000}:80"
+
+    queue:
+        environment: *prod-env
+
+    scheduler:
+        environment: *prod-env
+
+    db:
+        environment:
+            # Пароль задаётся только при первом создании тома БД (см. docs/deploy.md)
+            POSTGRES_PASSWORD: ${DB_PASSWORD:?Укажите DB_PASSWORD в deploy.env}
+
+    # HTTPS-прокси с автоматическим сертификатом Let's Encrypt (включается флагом --profile https).
+    caddy:
+        image: caddy:2-alpine
+        container_name: vetmoment_caddy
+        profiles: [https]
+        restart: unless-stopped
+        ports:
+            - "80:80"
+            - "443:443"
+        environment:
+            APP_DOMAIN: ${APP_DOMAIN:?Укажите APP_DOMAIN в deploy.env}
+        volumes:
+            - ./docker/Caddyfile:/etc/caddy/Caddyfile:ro
+            - vetmoment_caddy_data:/data
+            - vetmoment_caddy_config:/config
+        depends_on:
+            app:
+                condition: service_healthy
+
+volumes:
+    vetmoment_caddy_data:
+    vetmoment_caddy_config:

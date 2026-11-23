@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\EnsureUserHasRole;
 use App\Http\Middleware\EnsureUserIsNotBlocked;
+use App\Http\Middleware\SecurityHeaders;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -24,6 +25,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             EnsureUserIsNotBlocked::class,
         ]);
+
+        // Глобально, а не в web-группе: заголовки нужны и на 404 неизвестного адреса.
+        $middleware->append(SecurityHeaders::class);
 
         // Гость → вход (с запоминанием intended URL); вошедший на /login → в свой кабинет.
         $middleware->redirectGuestsTo(fn () => route('login'));

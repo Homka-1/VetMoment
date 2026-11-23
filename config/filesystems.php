@@ -41,7 +41,10 @@ return [
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
+            // Относительный адрес: картинки открываются при любом хосте и порте (127.0.0.1, IP в локальной сети,
+            // `php artisan serve --port=8080`), даже если APP_URL указан неточно. Абсолютный адрес для
+            // Open Graph строит App\Support\Seo::absolute().
+            'url' => env('PUBLIC_STORAGE_URL', '/storage'),
             'visibility' => 'public',
             'throw' => false,
             'report' => false,

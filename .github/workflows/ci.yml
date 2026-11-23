@@ -101,6 +101,14 @@ jobs:
               run: |
                   curl -fsS http://localhost:8000/up
                   curl -fsS http://localhost:8000/ | grep -q VetMoment
+            - uses: actions/setup-node@v5
+              with:
+                  node-version: '22'
+            - name: Браузерная smoke-проверка (Playwright, tests/browser/smoke.mjs)
+              run: |
+                  npm i --no-save --no-audit --no-fund playwright
+                  npx playwright install --with-deps chromium
+                  node tests/browser/smoke.mjs
             - name: Журнал при ошибке
               if: failure()
               run: docker compose logs
