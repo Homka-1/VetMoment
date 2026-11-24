@@ -1,0 +1,668 @@
+<!DOCTYPE html><html lang="ru" data-demo-page="shelter-campaigns-vaktsiny-na-osen-edit.html" data-demo-role="shelter"><head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Вакцины на осень — VetMoment</title>
+<meta name="description" content="VetMoment — анкеты питомцев из приютов Казахстана, сборы на лечение и корм, запись на выгул собак.">
+    <meta name="robots" content="noindex, nofollow">
+<meta property="og:site_name" content="VetMoment">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Вакцины на осень">
+<meta property="og:description" content="VetMoment — анкеты питомцев из приютов Казахстана, сборы на лечение и корм, запись на выгул собак.">
+
+<meta property="og:image" content="http://localhost:8000/images/og-default.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Вакцины на осень">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#1D2B4F">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+<link rel="stylesheet" href="assets/app.css"><link rel="stylesheet" href="assets/demo.css"><script src="assets/data.js"></script><script src="assets/demo.js"></script><script src="assets/app.js" defer=""></script></head>
+<body class="flex min-h-dvh flex-col bg-canvas">
+    <svg xmlns="http://www.w3.org/2000/svg" style="display:none"><symbol id="i-paw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.5c-3.3-2.2-5-4-5-6.1 0-1.5 1.1-2.6 2.5-2.6 1.1 0 2 .6 2.5 1.5.5-.9 1.4-1.5 2.5-1.5 1.4 0 2.5 1.1 2.5 2.6 0 2.1-1.7 3.9-5 6.1z"></path><ellipse fill="currentColor" stroke="none" cx="5.4" cy="9.6" rx="1.6" ry="2.1" transform="rotate(-24 5.4 9.6)"></ellipse><ellipse fill="currentColor" stroke="none" cx="9.4" cy="5.6" rx="1.6" ry="2.2" transform="rotate(-8 9.4 5.6)"></ellipse><ellipse fill="currentColor" stroke="none" cx="14.6" cy="5.6" rx="1.6" ry="2.2" transform="rotate(8 14.6 5.6)"></ellipse><ellipse fill="currentColor" stroke="none" cx="18.6" cy="9.6" rx="1.6" ry="2.1" transform="rotate(24 18.6 9.6)"></ellipse></symbol><symbol id="i-heart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.3a4.3 4.3 0 0 1 7.5 2.5C19.5 15.4 12 20 12 20z"></path></symbol><symbol id="i-heart-filled" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path fill="currentColor" d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.3a4.3 4.3 0 0 1 7.5 2.5C19.5 15.4 12 20 12 20z"></path></symbol><symbol id="i-tag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="15.5" r="6"></circle><circle cx="12" cy="5" r="2.5"></circle><circle cx="12" cy="12.2" r="1" fill="currentColor" stroke="none"></circle></symbol><symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11 12 4l8 7"></path><path d="M6 9.5V20h12V9.5"></path><path d="M10 20v-5h4v5"></path></symbol><symbol id="i-leash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="6.2" cy="6.2" rx="2.9" ry="3.8" transform="rotate(-45 6.2 6.2)"></ellipse><path d="M8.6 8.6c3.2 3.2 1.2 6.6 5.6 8.6"></path><circle cx="17.2" cy="18" r="2.6"></circle></symbol><symbol id="i-tenge" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 4.5h11"></path><path d="M6.5 8.5h11"></path><path d="M12 8.5V20"></path></symbol><symbol id="i-calendar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"></rect><path d="M3.5 9.5h17"></path><path d="M8 3v4"></path><path d="M16 3v4"></path></symbol><symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5V12l3 2"></path></symbol><symbol id="i-map-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"></path><circle cx="12" cy="10" r="2.3"></circle></symbol><symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.8"></circle><path d="M4.5 20c.8-3.6 3.8-5.5 7.5-5.5s6.7 1.9 7.5 5.5"></path></symbol><symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4.5 4.5"></path></symbol><symbol id="i-filter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h9"></path><path d="M17 7h3"></path><path d="M4 17h3"></path><path d="M11 17h9"></path><circle cx="15" cy="7" r="2"></circle><circle cx="9" cy="17" r="2"></circle></symbol><symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"></path></symbol><symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12"></path><path d="M18 6 6 18"></path></symbol><symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"></path><path d="M5 12h14"></path></symbol><symbol id="i-alert-triangle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 4.9 3.2 17.5A2 2 0 0 0 4.9 20.5h14.2a2 2 0 0 0 1.7-3L13.7 4.9a2 2 0 0 0-3.4 0z"></path><path d="M12 9.5v4.5"></path><circle cx="12" cy="17.2" r=".6" fill="currentColor"></circle></symbol><symbol id="i-alert-circle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5v5.5"></path><circle cx="12" cy="16.4" r=".6" fill="currentColor"></circle></symbol><symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 11v5.5"></path><circle cx="12" cy="7.8" r=".6" fill="currentColor"></circle></symbol><symbol id="i-check-circle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"></circle><path d="m8.3 12.2 2.5 2.5 5-5"></path></symbol><symbol id="i-chevron-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m14.5 6-6 6 6 6"></path></symbol><symbol id="i-chevron-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9.5 6 6 6-6 6"></path></symbol><symbol id="i-chevron-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9.5 6 6 6-6"></path></symbol><symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"></path><path d="M4 12h16"></path><path d="M4 17h16"></path></symbol><symbol id="i-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15z"></path><path d="M10 20.5a2 2 0 0 0 4 0"></path></symbol><symbol id="i-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2.5"></rect><path d="m8.5 7 1.5-2.5h4L15.5 7"></path><circle cx="12" cy="13.5" r="3.5"></circle></symbol><symbol id="i-image" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="15" rx="2.5"></rect><circle cx="8.5" cy="9.5" r="1.8"></circle><path d="m21 15.5-5-5-9 9"></path></symbol><symbol id="i-shield-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 19 6v5.5c0 4.3-3 7.7-7 9.1-4-1.4-7-4.8-7-9.1V6z"></path><path d="m8.8 12 2.2 2.2 4.2-4.4"></path></symbol><symbol id="i-syringe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><g transform="rotate(45 12 12)"><rect x="9" y="6" width="6" height="10.5" rx="1"></rect><path d="M12 6V2.5"></path><path d="M9.5 2.5h5"></path><path d="M12 16.5V22"></path><path d="M9 9.5h2.5"></path><path d="M9 12.5h2.5"></path></g></symbol><symbol id="i-cat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 10.5V4.5l4 3h6l4-3v6c0 5-3.1 9-7 9s-7-4-7-9z"></path><circle cx="9.5" cy="12" r=".9" fill="currentColor"></circle><circle cx="14.5" cy="12" r=".9" fill="currentColor"></circle><path d="M11 15h2l-1 1z"></path></symbol><symbol id="i-dog" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 5.5h8a3 3 0 0 1 3 3V13c0 3.9-3.1 6.5-7 6.5S5 16.9 5 13V8.5a3 3 0 0 1 3-3z"></path><path d="M8 5.5C5 5.5 3 7 3 10.5c0 1.3.9 2 2 2"></path><path d="M16 5.5c3 0 5 1.5 5 5 0 1.3-.9 2-2 2"></path><circle cx="9.5" cy="11" r=".9" fill="currentColor"></circle><circle cx="14.5" cy="11" r=".9" fill="currentColor"></circle><path d="M10.8 14.5h2.4L12 16z"></path></symbol><symbol id="i-edit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"></path><path d="m13.5 6.5 4 4"></path></symbol><symbol id="i-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h15"></path><path d="M9.5 7V4.5h5V7"></path><path d="m6.5 7 1 13h9l1-13"></path></symbol><symbol id="i-upload" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4"></path><path d="M7.5 8.5 12 4l4.5 4.5"></path><path d="M4.5 15v4.5h15V15"></path></symbol><symbol id="i-share" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5.5" r="2.5"></circle><circle cx="6" cy="12" r="2.5"></circle><circle cx="18" cy="18.5" r="2.5"></circle><path d="m8.2 10.8 7.6-4"></path><path d="m8.2 13.2 7.6 4"></path></symbol><symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 3.5h3l1.5 4-2 1.2a10 10 0 0 0 5.3 5.3l1.2-2 4 1.5v3a2 2 0 0 1-2.2 2A15.5 15.5 0 0 1 4.5 5.7a2 2 0 0 1 2-2.2z"></path></symbol><symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="13" rx="2"></rect><path d="m3.5 7 8.5 6 8.5-6"></path></symbol><symbol id="i-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8.5" r="3.3"></circle><path d="M3 19.5c.6-3.2 3-5 6-5s5.4 1.8 6 5"></path><path d="M15.5 5.6a3.3 3.3 0 0 1 0 5.8"></path><path d="M17.5 14.8c1.8.6 3.1 2.2 3.5 4.7"></path></symbol><symbol id="i-logout" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4.5h3.5a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H14"></path><path d="M10 16.5 5.5 12 10 7.5"></path><path d="M5.5 12h10"></path></symbol></svg>
+
+    <a href="#content" class="sr-only z-50 rounded-sm bg-ink-900 px-4 py-3 font-semibold text-white focus:not-sr-only focus:fixed focus:top-3 focus:left-3">Перейти к содержанию</a><div class="demo-bar" data-demo-bar="" role="region" aria-label="Демо-версия"><div class="page-container demo-bar__inner"><p class="demo-bar__note"><svg class="demo-bar__icon" width="20" height="20" aria-hidden="true" focusable="false"><use href="#i-info"></use></svg><span><strong>Демо-версия:</strong> данные не сохраняются на сервере</span></p><div class="demo-bar__controls"><span class="demo-bar__label" id="demo-roles-label">Смотреть как</span><div class="demo-roles" role="group" aria-labelledby="demo-roles-label"><button type="button" class="demo-roles__item" data-demo-switch="guest" aria-pressed="false">Гость</button><button type="button" class="demo-roles__item" data-demo-switch="volunteer" aria-pressed="false">Волонтёр</button><button type="button" class="demo-roles__item" data-demo-switch="shelter" aria-pressed="false">Приют</button><button type="button" class="demo-roles__item" data-demo-switch="admin" aria-pressed="false">Админ</button></div><button type="button" class="demo-bar__reset" data-demo-reset="" aria-label="Сбросить демо">Сбросить<span class="demo-bar__more"> демо</span></button></div></div></div>
+
+    <header class="sticky top-0 z-40 border-b border-subtle bg-white/95 backdrop-blur">
+    <div class="page-container flex h-header items-center gap-3 lg:h-header-lg lg:gap-8">
+        <a href="index.html" class="inline-flex shrink-0 rounded-sm">
+    
+    <img src="images/brand/logo.svg" alt="VetMoment — на главную" width="184" height="32" class="h-8 w-auto lg:h-9">
+</a>
+
+        <nav aria-label="Основные разделы" class="hidden h-full lg:block">
+            <ul class="flex h-full items-stretch gap-1">
+                                    <li class="flex">
+                        <a href="pets.html" class="relative flex items-center px-3 text-sm transition-colors duration-120 after:absolute after:inset-x-3 after:bottom-0 after:h-[3px] after:rounded-t-xs after:bg-tag-500 font-medium text-secondary after:opacity-0 hover:text-primary hover:after:bg-ink-200 hover:after:opacity-100">Питомцы</a>
+                    </li>
+                                    <li class="flex">
+                        <a href="campaigns.html" class="relative flex items-center px-3 text-sm transition-colors duration-120 after:absolute after:inset-x-3 after:bottom-0 after:h-[3px] after:rounded-t-xs after:bg-tag-500 font-medium text-secondary after:opacity-0 hover:text-primary hover:after:bg-ink-200 hover:after:opacity-100">Сборы</a>
+                    </li>
+                                    <li class="flex">
+                        <a href="walks.html" class="relative flex items-center px-3 text-sm transition-colors duration-120 after:absolute after:inset-x-3 after:bottom-0 after:h-[3px] after:rounded-t-xs after:bg-tag-500 font-medium text-secondary after:opacity-0 hover:text-primary hover:after:bg-ink-200 hover:after:opacity-100">Выгул</a>
+                    </li>
+                                    <li class="flex">
+                        <a href="shelters.html" class="relative flex items-center px-3 text-sm transition-colors duration-120 after:absolute after:inset-x-3 after:bottom-0 after:h-[3px] after:rounded-t-xs after:bg-tag-500 font-medium text-secondary after:opacity-0 hover:text-primary hover:after:bg-ink-200 hover:after:opacity-100">Приюты</a>
+                    </li>
+                                    <li class="flex">
+                        <a href="help.html" class="relative flex items-center px-3 text-sm transition-colors duration-120 after:absolute after:inset-x-3 after:bottom-0 after:h-[3px] after:rounded-t-xs after:bg-tag-500 font-medium text-secondary after:opacity-0 hover:text-primary hover:after:bg-ink-200 hover:after:opacity-100">Как помочь</a>
+                    </li>
+                            </ul>
+        </nav>
+
+        <div class="ml-auto flex items-center gap-1 sm:gap-2 lg:gap-4">
+                            <a href="notifications--as-shelter.html" class="relative grid size-control place-items-center rounded-pill text-ink-900 hover:bg-ink-100" aria-label="Уведомления">
+                    <svg class="shrink-0" width="20" height="20" aria-hidden="true" focusable="false">
+    <use href="#i-bell"></use>
+</svg>
+                                    </a>
+
+                <details class="group relative hidden lg:block" data-dropdown="">
+                    <summary class="flex h-control cursor-pointer list-none items-center gap-2.5 rounded-pill py-1 pr-3 pl-1 hover:bg-ink-100 [&amp;::-webkit-details-marker]:hidden">
+                        <span class="inline-grid shrink-0 place-items-center overflow-hidden rounded-pill font-bold size-10 text-sm bg-tag-200 text-tag-700" aria-hidden="true">
+            ДА
+    </span>
+                        <span class="max-w-40 truncate text-sm font-semibold">Динара Абенова</span>
+                        <svg class="shrink-0 transition-transform group-open:rotate-180" width="16" height="16" aria-hidden="true" focusable="false">
+    <use href="#i-chevron-down"></use>
+</svg>
+                    </summary>
+                    <div class="absolute right-0 mt-2 w-64 rounded-md border border-subtle bg-raised p-2 shadow-md">
+                        <p class="px-3 pt-2 pb-3 text-xs text-muted">Представитель приюта</p>
+                        <a href="shelter.html" class="flex items-center gap-3 rounded-sm px-3 py-2.5 text-sm font-medium hover:bg-ink-100">
+                            <svg class="shrink-0" width="16" height="16" aria-hidden="true" focusable="false">
+    <use href="#i-user"></use>
+</svg>
+Личный кабинет
+                        </a>
+                        <form method="POST" action="#" data-demo-action="logout">
+                                                        <button type="submit" class="flex w-full items-center gap-3 rounded-sm px-3 py-2.5 text-left text-sm font-medium hover:bg-ink-100">
+                                <svg class="shrink-0" width="16" height="16" aria-hidden="true" focusable="false">
+    <use href="#i-logout"></use>
+</svg>
+Выйти
+                            </button>
+                        </form>
+                    </div>
+                </details>
+            
+            <a href="pets.html" class="grid size-control place-items-center rounded-pill hover:bg-ink-100 lg:hidden" aria-label="Найти питомца">
+                <svg class="shrink-0" width="20" height="20" aria-hidden="true" focusable="false">
+    <use href="#i-search"></use>
+</svg>
+            </a>
+            <button type="button" data-modal-open="mobile-menu" aria-controls="mobile-menu" aria-haspopup="dialog" class="-mr-2 grid size-control place-items-center rounded-pill hover:bg-ink-100 lg:hidden" aria-label="Открыть меню">
+                <svg class="shrink-0" width="24" height="24" aria-hidden="true" focusable="false">
+    <use href="#i-menu"></use>
+</svg>
+            </button>
+        </div>
+    </div>
+</header>
+
+    <main id="content" tabindex="-1" class="flex-1 focus:outline-none">
+        <div class="page-container py-6 lg:grid lg:grid-cols-[var(--spacing-sidebar)_1fr] lg:gap-10 lg:py-10">
+        <aside class="lg:sticky lg:top-[calc(var(--spacing-header-lg)+40px)] lg:self-start">
+            <div class="hidden items-center gap-3 lg:flex">
+                <span class="inline-grid shrink-0 place-items-center overflow-hidden rounded-pill font-bold size-14 text-md bg-tag-200 text-tag-700" aria-hidden="true">
+            ДА
+    </span>
+                <div class="min-w-0">
+                    <p class="truncate font-semibold">Динара Абенова</p>
+                    <p class="text-sm text-muted">Представитель приюта</p>
+                </div>
+            </div>
+            <nav aria-label="Разделы кабинета" class="-mx-4 overflow-x-auto px-4 lg:mx-0 lg:mt-6 lg:overflow-visible lg:px-0">
+                <ul class="flex gap-2 lg:grid lg:gap-1">
+                                            <li class="shrink-0">
+                            <a href="shelter.html" class="relative flex h-control items-center gap-3 rounded-pill border px-4 text-sm font-semibold transition-colors duration-120 lg:rounded-sm lg:border-0 border-ink-300 bg-white text-secondary hover:text-primary lg:bg-transparent lg:hover:bg-white">
+                                <svg class="shrink-0 hidden lg:block" width="16" height="16" aria-hidden="true" focusable="false">
+    <use href="#i-home"></use>
+</svg>
+Сводка
+                                                            </a>
+                        </li>
+                                            <li class="shrink-0">
+                            <a href="shelter-pets.html" class="relative flex h-control items-center gap-3 rounded-pill border px-4 text-sm font-semibold transition-colors duration-120 lg:rounded-sm lg:border-0 border-ink-300 bg-white text-secondary hover:text-primary lg:bg-transparent lg:hover:bg-white">
+                                <svg class="shrink-0 hidden lg:block" width="16" height="16" aria-hidden="true" focusable="false">
+    <use href="#i-paw"></use>
+</svg>
+Питомцы
+                                                            </a>
+                        </li>
+                                            <li class="shrink-0">
+                            <a href="shelter-applications.html" class="relative flex h-control items-center gap-3 rounded-pill border px-4 text-sm font-semibold transition-colors duration-120 lg:rounded-sm lg:border-0 border-ink-300 bg-white text-secondary hover:text-primary lg:bg-transparent lg:hover:bg-white">
+                                <svg class="shrink-0 hidden lg:block" width="16" height="16" aria-hidden="true" focusable="false">
+    <use href="#i-mail"></use>
+</svg>
+Заявки
+                                                            </a>
+                        </li>
+                                            <li class="shrink-0">
+                            <a href="shelter-campaigns.html" aria-current="page" class="relative flex h-control items-center gap-3 rounded-pill border px-4 text-sm font-semibold transition-colors duration-120 lg:rounded-sm lg:border-0 border-ink-900 bg-ink-900 text-white lg:bg-white lg:text-primary lg:shadow-sm">
+                                <svg class="shrink-0 hidden lg:block text-tag-700" width="16" height="16" aria-hidden="true" focusable="false">
+    <use href="#i-tenge"></use>
+</svg>
+Сборы
+                                                            </a>
+                        </li>
+                                            <li class="shrink-0">
+                            <a href="shelter-donations.html" class="relative flex h-control items-center gap-3 rounded-pill border px-4 text-sm font-semibold transition-colors duration-120 lg:rounded-sm lg:border-0 border-ink-300 bg-white text-secondary hover:text-primary lg:bg-transparent lg:hover:bg-white">
+                                <svg class="shrink-0 hidden lg:block" width="16" height="16" aria-hidden="true" focusable="false">
+    <use href="#i-heart"></use>
+</svg>
+Пожертвования
+                                                            </a>
+                        </li>
+                                            <li class="shrink-0">
+                            <a href="shelter-slots.html" class="relative flex h-control items-center gap-3 rounded-pill border px-4 text-sm font-semibold transition-colors duration-120 lg:rounded-sm lg:border-0 border-ink-300 bg-white text-secondary hover:text-primary lg:bg-transparent lg:hover:bg-white">
+                                <svg class="shrink-0 hidden lg:block" width="16" height="16" aria-hidden="true" focusable="false">
+    <use href="#i-calendar"></use>
+</svg>
+Слоты выгула
+                                                            </a>
+                        </li>
+                                            <li class="shrink-0">
+                            <a href="shelter-bookings.html" class="relative flex h-control items-center gap-3 rounded-pill border px-4 text-sm font-semibold transition-colors duration-120 lg:rounded-sm lg:border-0 border-ink-300 bg-white text-secondary hover:text-primary lg:bg-transparent lg:hover:bg-white">
+                                <svg class="shrink-0 hidden lg:block" width="16" height="16" aria-hidden="true" focusable="false">
+    <use href="#i-leash"></use>
+</svg>
+Записи на выгул
+                                                            </a>
+                        </li>
+                                            <li class="shrink-0">
+                            <a href="notifications--as-shelter.html" class="relative flex h-control items-center gap-3 rounded-pill border px-4 text-sm font-semibold transition-colors duration-120 lg:rounded-sm lg:border-0 border-ink-300 bg-white text-secondary hover:text-primary lg:bg-transparent lg:hover:bg-white">
+                                <svg class="shrink-0 hidden lg:block" width="16" height="16" aria-hidden="true" focusable="false">
+    <use href="#i-bell"></use>
+</svg>
+Уведомления
+                                                            </a>
+                        </li>
+                                            <li class="shrink-0">
+                            <a href="shelter-profile.html" class="relative flex h-control items-center gap-3 rounded-pill border px-4 text-sm font-semibold transition-colors duration-120 lg:rounded-sm lg:border-0 border-ink-300 bg-white text-secondary hover:text-primary lg:bg-transparent lg:hover:bg-white">
+                                <svg class="shrink-0 hidden lg:block" width="16" height="16" aria-hidden="true" focusable="false">
+    <use href="#i-edit"></use>
+</svg>
+Профиль приюта
+                                                            </a>
+                        </li>
+                                            <li class="shrink-0">
+                            <a href="cabinet-profile--as-shelter.html" class="relative flex h-control items-center gap-3 rounded-pill border px-4 text-sm font-semibold transition-colors duration-120 lg:rounded-sm lg:border-0 border-ink-300 bg-white text-secondary hover:text-primary lg:bg-transparent lg:hover:bg-white">
+                                <svg class="shrink-0 hidden lg:block" width="16" height="16" aria-hidden="true" focusable="false">
+    <use href="#i-user"></use>
+</svg>
+Мой профиль
+                                                            </a>
+                        </li>
+                                    </ul>
+            </nav>
+            <form method="POST" action="#" class="mt-4 hidden border-t border-subtle pt-4 lg:block" data-demo-action="logout">
+                                <button type="submit" class="flex h-control w-full items-center gap-3 rounded-sm px-4 text-sm font-semibold text-secondary hover:bg-white hover:text-primary">
+                    <svg class="shrink-0" width="16" height="16" aria-hidden="true" focusable="false">
+    <use href="#i-logout"></use>
+</svg>
+Выйти
+                </button>
+            </form>
+        </aside>
+
+        <div class="mt-6 min-w-0 lg:mt-0">
+            <div class="flex flex-wrap items-end justify-between gap-4">
+                <h1 class="type-h2">Сбор: Вакцины на осень</h1>
+                                    <div class="flex flex-wrap gap-3"><a href="campaigns-vaktsiny-na-osen.html" class="relative inline-flex items-center justify-center rounded-sm font-semibold leading-tight whitespace-nowrap select-none transition-colors duration-120 disabled:cursor-not-allowed aria-disabled:pointer-events-none border-control border-ink-900 bg-white text-ink-900 hover:bg-ink-50 active:bg-ink-100 disabled:border-ink-300 disabled:bg-white disabled:text-ink-400 aria-disabled:border-ink-300 aria-disabled:text-ink-400 h-control px-5 text-base gap-2">
+        <span class="inline-flex items-center justify-center gap-[inherit]">
+                    <svg class="shrink-0" width="20" height="20" aria-hidden="true" focusable="false">
+    <use href="#i-tenge"></use>
+</svg>
+                            Открыть на сайте
+                    </span>
+    </a>
+                            <a href="shelter-campaigns-vaktsiny-na-osen-reports.html" class="relative inline-flex items-center justify-center rounded-sm font-semibold leading-tight whitespace-nowrap select-none transition-colors duration-120 disabled:cursor-not-allowed aria-disabled:pointer-events-none border-control border-ink-900 bg-white text-ink-900 hover:bg-ink-50 active:bg-ink-100 disabled:border-ink-300 disabled:bg-white disabled:text-ink-400 aria-disabled:border-ink-300 aria-disabled:text-ink-400 h-control px-5 text-base gap-2">
+        <span class="inline-flex items-center justify-center gap-[inherit]">
+                    <svg class="shrink-0" width="20" height="20" aria-hidden="true" focusable="false">
+    <use href="#i-image"></use>
+</svg>
+                            Отчёты
+                    </span>
+    </a></div>
+                            </div>
+            <div class="mt-6 lg:mt-8">
+                <div class="grid grid-cols-1 gap-6">
+        <nav aria-label="Хлебные крошки">
+    <ol class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+                    <li class="flex items-center gap-2">
+                                    <a href="shelter-campaigns.html" class="text-secondary underline underline-offset-3 hover:text-primary">Сборы</a>
+                    <svg class="shrink-0 text-ink-400" width="16" height="16" aria-hidden="true" focusable="false">
+    <use href="#i-chevron-right"></use>
+</svg>
+                            </li>
+                    <li class="flex items-center gap-2">
+                                    <span class="font-semibold text-primary" aria-current="page">Вакцины на осень</span>
+                            </li>
+            </ol>
+</nav>
+                
+                    <div class="rounded-lg border border-subtle bg-raised p-5 md:p-6 grid gap-4 sm:grid-cols-[1fr_auto] sm:items-center">
+    <div class="grid gap-3">
+                    <div class="flex flex-wrap items-center gap-3">
+                        <span class="inline-flex h-7 items-center gap-1.5 rounded-pill border px-2.5 text-xs font-semibold whitespace-nowrap bg-success-bg text-success-fg border-success-border border-transparent">
+    <span class="badge-hole"></span>
+        <span>Цель достигнута</span>
+</span>
+                        <span class="text-sm text-secondary">Собрано 200&nbsp;000&nbsp;₸ из 200&nbsp;000&nbsp;₸</span>
+                    </div>
+                    <div class="grid gap-2 max-w-md">
+        <div class="relative h-2 overflow-hidden rounded-pill bg-ink-100" role="progressbar" data-progress-bar="" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" aria-label="Собрано 100% от цели">
+        <div data-progress-fill="" class="vm-progress-fill h-full rounded-pill bg-success-solid" style="width: 100%">
+                    </div>
+    </div>
+</div>
+                </div>
+                <a href="shelter-donations--campaign-3.html" class="relative inline-flex items-center justify-center rounded-sm font-semibold leading-tight whitespace-nowrap select-none transition-colors duration-120 disabled:cursor-not-allowed aria-disabled:pointer-events-none bg-transparent text-ink-900 hover:bg-ink-100 active:bg-ink-200 disabled:bg-transparent disabled:text-ink-400 aria-disabled:text-ink-400 h-control-sm px-3 text-sm gap-1.5">
+        <span class="inline-flex items-center justify-center gap-[inherit]">
+                            Пожертвования
+                    </span>
+    </a>
+</div>
+        
+        <form method="POST" action="#" enctype="multipart/form-data" class="grid gap-6" novalidate="" data-demo-action="shelter/campaigns/vaktsiny-na-osen">
+                                        <input type="hidden" name="_method" value="PUT">            
+            <section class="rounded-lg border border-subtle bg-raised p-6 md:p-8 grid gap-6" aria-labelledby="campaign-form-about">
+    <h2 id="campaign-form-about" class="type-h4">О сборе</h2>
+                <div class="grid content-start gap-1.5">
+            <div class="flex items-baseline justify-between gap-3">
+                            <label for="f-title" class="type-label text-primary">
+                    Название<span class="text-danger-fg" aria-hidden="true"> *</span>                </label>
+                                </div>
+    
+    <div class="group flex h-field items-center gap-2 rounded-sm border-control bg-white px-4 transition-colors duration-120 focus-within:outline-3 focus-within:outline-offset-2 focus-within:outline-focus has-disabled:border-ink-200 has-disabled:bg-ink-100 border-strong hover:border-ink-900">
+                        <input type="text" name="title" id="f-title" value="Вакцины на осень" required="" aria-describedby="f-title-hint" class="h-full w-full min-w-0 bg-transparent text-base text-primary outline-none placeholder:text-muted disabled:cursor-not-allowed disabled:text-ink-400" maxlength="120">
+            </div>
+
+            <div class="flex items-start justify-between gap-3">
+                            <p id="f-title-hint" class="type-caption text-muted">Что и для кого: «Операция на лапе для Ромашки»</p>
+                                </div>
+    </div>
+                <div class="grid content-start gap-1.5">
+            <div class="flex items-baseline justify-between gap-3">
+                            <label for="f-short_description" class="type-label text-primary">
+                    Коротко<span class="text-danger-fg" aria-hidden="true"> *</span>                </label>
+                                </div>
+    
+    <div class="group flex h-field items-center gap-2 rounded-sm border-control bg-white px-4 transition-colors duration-120 focus-within:outline-3 focus-within:outline-offset-2 focus-within:outline-focus has-disabled:border-ink-200 has-disabled:bg-ink-100 border-strong hover:border-ink-900">
+                        <input type="text" name="short_description" id="f-short_description" value="Комплексная вакцинация и обработка от паразитов для 38 питомцев приюта." required="" aria-describedby="f-short_description-hint" class="h-full w-full min-w-0 bg-transparent text-base text-primary outline-none placeholder:text-muted disabled:cursor-not-allowed disabled:text-ink-400" maxlength="200">
+            </div>
+
+            <div class="flex items-start justify-between gap-3">
+                            <p id="f-short_description-hint" class="type-caption text-muted">Одна фраза для карточки и ссылки в соцсетях, до 200 символов</p>
+                                </div>
+    </div>
+                <div class="grid content-start gap-1.5">
+            <div class="flex items-baseline justify-between gap-3">
+                            <label for="f-description" class="type-label text-primary">
+                    Описание<span class="text-danger-fg" aria-hidden="true"> *</span>                </label>
+                                </div>
+    
+    <textarea name="description" id="f-description" rows="10" required="" maxlength="10000" data-counter="" aria-describedby="f-description-hint" class="block w-full resize-y rounded-sm border-control bg-white px-4 py-3 text-base text-primary transition-colors duration-120 placeholder:text-muted disabled:cursor-not-allowed disabled:border-ink-200 disabled:bg-ink-100 disabled:text-ink-400 border-strong hover:border-ink-900">Каждую осень мы прививаем всех животных приюта от бешенства и инфекций и обрабатываем от клещей и глистов. В этом году у нас 38 питомцев.</textarea>
+
+            <div class="flex items-start justify-between gap-3">
+                            <p id="f-description-hint" class="type-caption text-muted">Что случилось и на что нужны деньги. Смету пишите строками «— операция и наркоз — 380 000 ₸» — на сайте она станет таблицей.</p>
+                                        <p class="type-caption ml-auto whitespace-nowrap text-muted tabular-nums" data-counter-for="f-description" aria-live="polite">137 / 10000</p>
+                    </div>
+    </div>
+                <div class="grid content-start gap-1.5 md:max-w-sm">
+            <div class="flex items-baseline justify-between gap-3">
+                            <label for="f-pet_id" class="type-label text-primary">
+                    Питомец                </label>
+                                </div>
+    
+    <div class="relative">
+        <select name="pet_id" id="f-pet_id" aria-describedby="f-pet_id-hint" class="h-field w-full cursor-pointer appearance-none rounded-sm border-control bg-white pr-11 pl-4 text-base text-primary transition-colors duration-120 disabled:cursor-not-allowed disabled:border-ink-200 disabled:bg-ink-100 disabled:text-ink-400 border-strong hover:border-ink-900">
+                            <option value="" selected="">Не на конкретного питомца</option>
+                                        <option value="10">Алтай</option>
+                            <option value="6">Бим</option>
+                            <option value="1">Бублик</option>
+                            <option value="2">Граф</option>
+                            <option value="7">Джесси</option>
+                            <option value="9">Луна</option>
+                            <option value="5">Найда</option>
+                            <option value="3">Ромашка</option>
+                            <option value="8">Сёма</option>
+                            <option value="4">Тоша</option>
+                            <option value="11">Черныш</option>
+                    </select>
+        <svg class="shrink-0 pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-primary" width="20" height="20" aria-hidden="true" focusable="false">
+    <use href="#i-chevron-down"></use>
+</svg>
+    </div>
+
+            <div class="flex items-start justify-between gap-3">
+                            <p id="f-pet_id-hint" class="type-caption text-muted">Сбор появится на карточке питомца</p>
+                                </div>
+    </div>
+</section>
+
+            <section class="rounded-lg border border-subtle bg-raised p-6 md:p-8 grid gap-6" aria-labelledby="campaign-form-money">
+    <h2 id="campaign-form-money" class="type-h4">Цель и срок</h2>
+                <div class="grid gap-6 md:grid-cols-2">
+                    <div class="grid content-start gap-1.5">
+            <div class="flex items-baseline justify-between gap-3">
+                            <label for="f-goal" class="type-label text-primary">
+                    Цель<span class="text-danger-fg" aria-hidden="true"> *</span>                </label>
+                                </div>
+    
+    <div class="group flex h-field items-center gap-2 rounded-sm border-control bg-white px-4 transition-colors duration-120 focus-within:outline-3 focus-within:outline-offset-2 focus-within:outline-focus has-disabled:border-ink-200 has-disabled:bg-ink-100 border-strong hover:border-ink-900">
+                        <input type="text" name="goal" id="f-goal" value="200 000" required="" aria-describedby="f-goal-hint" class="h-full w-full min-w-0 bg-transparent text-base text-primary outline-none placeholder:text-muted disabled:cursor-not-allowed disabled:text-ink-400" inputmode="numeric" placeholder="300 000" autocomplete="off">
+                    <span class="font-semibold text-primary" aria-hidden="true">₸</span>
+            </div>
+
+            <div class="flex items-start justify-between gap-3">
+                            <p id="f-goal-hint" class="type-caption text-muted">От 5 000 до 50 000 000 ₸</p>
+                                </div>
+    </div>
+                    <div class="grid content-start gap-1.5">
+            <div class="flex items-baseline justify-between gap-3">
+                            <label for="f-ends_at" class="type-label text-primary">
+                    Дата окончания                </label>
+                                </div>
+    
+    <div class="group flex h-field items-center gap-2 rounded-sm border-control bg-white px-4 transition-colors duration-120 focus-within:outline-3 focus-within:outline-offset-2 focus-within:outline-focus has-disabled:border-ink-200 has-disabled:bg-ink-100 border-strong hover:border-ink-900">
+                        <input type="date" name="ends_at" id="f-ends_at" value="2026-11-05" aria-describedby="f-ends_at-hint" class="h-full w-full min-w-0 bg-transparent text-base text-primary outline-none placeholder:text-muted disabled:cursor-not-allowed disabled:text-ink-400" min="2026-11-25" max="2027-09-25">
+            </div>
+
+            <div class="flex items-start justify-between gap-3">
+                            <p id="f-ends_at-hint" class="type-caption text-muted">Не дольше года. Пусто — до достижения цели</p>
+                                </div>
+    </div>
+                </div>
+                <label for="f-allow_overfunding" class="group inline-flex cursor-pointer items-center gap-3 py-1 text-base text-primary has-disabled:cursor-not-allowed has-disabled:text-ink-400">
+    <span class="relative inline-flex h-7 w-11 shrink-0 items-center">
+        <input type="checkbox" role="switch" name="allow_overfunding" id="f-allow_overfunding" value="1" class="peer absolute inset-0 size-full cursor-pointer appearance-none rounded-pill bg-ink-200 transition-colors duration-200 checked:bg-ink-900 disabled:cursor-not-allowed disabled:opacity-60">
+        <span class="pointer-events-none absolute left-1 grid size-5 place-items-center rounded-pill bg-white shadow-sm transition-transform duration-200 ease-out peer-checked:translate-x-4">
+            <svg class="shrink-0 size-3 text-ink-900 opacity-0 transition-opacity peer-checked:opacity-100 [:checked~*>&amp;]:opacity-100" width="16" height="16" aria-hidden="true" focusable="false">
+    <use href="#i-check"></use>
+</svg>
+        </span>
+    </span>
+    <span>Принимать пожертвования сверх цели до даты окончания</span>
+</label>
+</section>
+
+            <section class="rounded-lg border border-subtle bg-raised p-6 md:p-8 grid gap-5" aria-labelledby="campaign-form-cover">
+    <div>
+                    <h2 id="campaign-form-cover" class="type-h4">Обложка</h2>
+                    <p class="mt-1 text-sm text-secondary">JPG, PNG или WebP до 8 МБ. Без обложки покажем фото питомца или иллюстрацию.</p>
+                </div>
+                                <div class="grid content-start gap-1.5">
+            <div class="flex items-baseline justify-between gap-3">
+                            <label for="f-cover" class="type-label text-primary">
+                    Файл обложки                </label>
+                                </div>
+    
+    <input type="file" name="cover" id="f-cover" accept="image/jpeg,image/png,image/webp" class="block w-full text-sm text-secondary file:mr-4 file:h-control file:cursor-pointer file:rounded-sm file:border-control file:border-ink-900 file:bg-white file:px-4 file:font-semibold file:text-primary hover:file:bg-ink-50">
+
+    </div>
+</section>
+
+            <div class="flex flex-wrap items-center gap-3">
+                                    <button type="submit" class="relative inline-flex items-center justify-center rounded-sm font-semibold leading-tight whitespace-nowrap select-none transition-colors duration-120 disabled:cursor-not-allowed aria-disabled:pointer-events-none bg-ink-900 text-white hover:bg-ink-800 active:bg-ink-950 disabled:bg-ink-200 disabled:text-ink-400 aria-disabled:bg-ink-200 aria-disabled:text-ink-400 h-control-lg px-6 text-md gap-2" name="action" value="save">
+        <span class="inline-flex items-center justify-center gap-[inherit]">
+                            Сохранить
+                    </span>
+    </button>
+                                <a href="shelter-campaigns.html" class="relative inline-flex items-center justify-center rounded-sm font-semibold leading-tight whitespace-nowrap select-none transition-colors duration-120 disabled:cursor-not-allowed aria-disabled:pointer-events-none bg-transparent text-ink-900 hover:bg-ink-100 active:bg-ink-200 disabled:bg-transparent disabled:text-ink-400 aria-disabled:text-ink-400 h-control-lg px-6 text-md gap-2">
+        <span class="inline-flex items-center justify-center gap-[inherit]">
+                            Отмена
+                    </span>
+    </a>
+            </div>
+                    </form>
+
+                    <section class="rounded-lg border border-subtle bg-raised p-6 md:p-8 grid gap-4" aria-labelledby="campaign-form-finish">
+    <h2 id="campaign-form-finish" class="type-h4">Завершение</h2>
+                <p class="text-sm text-secondary">
+                    Закрытый сбор остаётся на сайте с отчётами, но не принимает деньги. Архив убирает сбор с сайта; пожертвования сохраняются.
+                </p>
+                <div class="flex flex-wrap gap-3">
+                                            <button type="button" class="relative inline-flex items-center justify-center rounded-sm font-semibold leading-tight whitespace-nowrap select-none transition-colors duration-120 disabled:cursor-not-allowed aria-disabled:pointer-events-none border-control border-ink-900 bg-white text-ink-900 hover:bg-ink-50 active:bg-ink-100 disabled:border-ink-300 disabled:bg-white disabled:text-ink-400 aria-disabled:border-ink-300 aria-disabled:text-ink-400 h-control px-5 text-base gap-2" data-modal-open="close-3">
+        <span class="inline-flex items-center justify-center gap-[inherit]">
+                            Закрыть сбор
+                    </span>
+    </button>
+                                        <button type="button" class="relative inline-flex items-center justify-center rounded-sm font-semibold leading-tight whitespace-nowrap select-none transition-colors duration-120 disabled:cursor-not-allowed aria-disabled:pointer-events-none bg-transparent text-ink-900 hover:bg-ink-100 active:bg-ink-200 disabled:bg-transparent disabled:text-ink-400 aria-disabled:text-ink-400 h-control px-5 text-base gap-2" data-modal-open="archive-3">
+        <span class="inline-flex items-center justify-center gap-[inherit]">
+                    <svg class="shrink-0" width="20" height="20" aria-hidden="true" focusable="false">
+    <use href="#i-trash"></use>
+</svg>
+                            Перенести в архив
+                    </span>
+    </button>
+                </div>
+</section>
+            <dialog id="close-3" aria-labelledby="close-3-title" class="vm-dialog m-auto w-[calc(100%-32px)] rounded-lg bg-raised p-0 text-primary shadow-lg backdrop:bg-transparent max-w-[480px]">
+    <div class="grid gap-4 p-6 md:p-7">
+        <div class="flex items-start justify-between gap-4">
+            <h2 id="close-3-title" class="type-h4 font-semibold">Закрыть сбор «Вакцины на осень»?</h2>
+            <button type="button" data-modal-close="" class="-mt-1 -mr-2 grid size-10 shrink-0 place-items-center rounded-pill text-ink-700 hover:bg-ink-100" aria-label="Закрыть">
+                <svg class="shrink-0" width="20" height="20" aria-hidden="true" focusable="false">
+    <use href="#i-x"></use>
+</svg>
+            </button>
+        </div>
+        <div class="text-secondary">Пожертвования перестанут приниматься, сбор останется на сайте как завершённый. Не забудьте опубликовать отчёт о расходах.</div>
+                    <div class="mt-2 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end"><button type="button" class="relative inline-flex items-center justify-center rounded-sm font-semibold leading-tight whitespace-nowrap select-none transition-colors duration-120 disabled:cursor-not-allowed aria-disabled:pointer-events-none bg-transparent text-ink-900 hover:bg-ink-100 active:bg-ink-200 disabled:bg-transparent disabled:text-ink-400 aria-disabled:text-ink-400 h-control px-5 text-base gap-2" data-modal-close="data-modal-close">
+        <span class="inline-flex items-center justify-center gap-[inherit]">
+                            Отмена
+                    </span>
+    </button>
+            <form method="POST" action="#" data-demo-action="shelter/campaigns/vaktsiny-na-osen/close">
+                                <button type="submit" class="relative inline-flex items-center justify-center rounded-sm font-semibold leading-tight whitespace-nowrap select-none transition-colors duration-120 disabled:cursor-not-allowed aria-disabled:pointer-events-none bg-danger-solid text-white hover:bg-danger-hover active:bg-danger-press disabled:bg-ink-200 disabled:text-ink-400 aria-disabled:bg-ink-200 aria-disabled:text-ink-400 h-control px-5 text-base gap-2 w-full">
+        <span class="inline-flex items-center justify-center gap-[inherit]">
+                            Закрыть сбор
+                    </span>
+    </button>
+            </form></div>
+            </div>
+</dialog>
+    <dialog id="archive-3" aria-labelledby="archive-3-title" class="vm-dialog m-auto w-[calc(100%-32px)] rounded-lg bg-raised p-0 text-primary shadow-lg backdrop:bg-transparent max-w-[480px]">
+    <div class="grid gap-4 p-6 md:p-7">
+        <div class="flex items-start justify-between gap-4">
+            <h2 id="archive-3-title" class="type-h4 font-semibold">Перенести «Вакцины на осень» в архив?</h2>
+            <button type="button" data-modal-close="" class="-mt-1 -mr-2 grid size-10 shrink-0 place-items-center rounded-pill text-ink-700 hover:bg-ink-100" aria-label="Закрыть">
+                <svg class="shrink-0" width="20" height="20" aria-hidden="true" focusable="false">
+    <use href="#i-x"></use>
+</svg>
+            </button>
+        </div>
+        <div class="text-secondary">Сбор пропадёт с сайта. Пожертвования и отчёты сохранятся — их видно в кабинете.</div>
+                    <div class="mt-2 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end"><button type="button" class="relative inline-flex items-center justify-center rounded-sm font-semibold leading-tight whitespace-nowrap select-none transition-colors duration-120 disabled:cursor-not-allowed aria-disabled:pointer-events-none bg-transparent text-ink-900 hover:bg-ink-100 active:bg-ink-200 disabled:bg-transparent disabled:text-ink-400 aria-disabled:text-ink-400 h-control px-5 text-base gap-2" data-modal-close="data-modal-close">
+        <span class="inline-flex items-center justify-center gap-[inherit]">
+                            Отмена
+                    </span>
+    </button>
+            <form method="POST" action="#" data-demo-action="shelter/campaigns/vaktsiny-na-osen">
+                                <input type="hidden" name="_method" value="DELETE">                <button type="submit" class="relative inline-flex items-center justify-center rounded-sm font-semibold leading-tight whitespace-nowrap select-none transition-colors duration-120 disabled:cursor-not-allowed aria-disabled:pointer-events-none bg-danger-solid text-white hover:bg-danger-hover active:bg-danger-press disabled:bg-ink-200 disabled:text-ink-400 aria-disabled:bg-ink-200 aria-disabled:text-ink-400 h-control px-5 text-base gap-2 w-full">
+        <span class="inline-flex items-center justify-center gap-[inherit]">
+                            Перенести в архив
+                    </span>
+    </button>
+            </form></div>
+            </div>
+</dialog>
+            </div>
+            </div>
+        </div>
+    </div>
+    </main>
+
+    <footer class="bg-inverse text-ink-200">
+    <div class="page-container grid gap-10 py-12 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr] lg:py-16">
+        <div class="max-w-xs">
+            <a href="index.html" class="inline-flex shrink-0 rounded-sm">
+    
+    <img src="images/brand/logo-inverse.svg" alt="VetMoment — на главную" width="184" height="32" class="h-8 w-auto lg:h-9">
+</a>
+            <p class="mt-4 text-sm">Помогаем приютам Казахстана найти хозяев, деньги на лечение и корм и волонтёров для прогулок.</p>
+        </div>
+
+        <nav aria-labelledby="footer-help">
+            <h2 id="footer-help" class="text-sm font-semibold text-white">Помочь</h2>
+            <ul class="mt-4 grid gap-2.5 text-sm">
+                                    <li><a href="pets.html" class="hover:text-white hover:underline">Питомцы</a></li>
+                                    <li><a href="campaigns.html" class="hover:text-white hover:underline">Сборы</a></li>
+                                    <li><a href="walks.html" class="hover:text-white hover:underline">Выгул</a></li>
+                                <li><a href="help.html" class="hover:text-white hover:underline">Как помочь</a></li>
+            </ul>
+        </nav>
+
+        <nav aria-labelledby="footer-shelters">
+            <h2 id="footer-shelters" class="text-sm font-semibold text-white">Приютам</h2>
+            <ul class="mt-4 grid gap-2.5 text-sm">
+                                                    <li><a href="shelter.html" class="hover:text-white hover:underline">Кабинет приюта</a></li>
+                                <li><a href="shelters.html" class="hover:text-white hover:underline">Все приюты</a></li>
+            </ul>
+        </nav>
+
+        <div>
+            <h2 class="text-sm font-semibold text-white">Связаться</h2>
+            <ul class="mt-4 grid gap-2.5 text-sm">
+                <li><a href="mailto:hello@vetmoment.kz" class="hover:text-white hover:underline">hello@vetmoment.kz</a></li>
+                <li><a href="tel:+77273001240" class="hover:text-white hover:underline">+7 727 300 12 40</a></li>
+                <li>Алматы, ул. Сатпаева, 30</li>
+            </ul>
+        </div>
+    </div>
+    <div class="border-t border-ink-800">
+        <div class="page-container flex flex-col gap-3 py-5 text-xs sm:flex-row sm:items-center sm:justify-between">
+            <p>© 2026 VetMoment</p>
+            <a href="privacy.html" class="underline underline-offset-3 hover:text-white">Политика обработки персональных данных</a>
+        </div>
+    </div>
+</footer>
+    <dialog id="mobile-menu" aria-label="Меню" class="vm-sheet m-0 h-dvh max-h-none w-full max-w-none bg-white p-0 text-primary backdrop:bg-transparent lg:hidden">
+    <div class="flex min-h-full flex-col px-4 pb-6">
+        <div class="flex h-header items-center justify-between">
+            <a href="index.html" class="inline-flex shrink-0 rounded-sm">
+    
+    <img src="images/brand/logo.svg" alt="VetMoment — на главную" width="184" height="32" class="h-8 w-auto lg:h-9">
+</a>
+            <button type="button" data-modal-close="" class="-mr-2 grid size-control place-items-center rounded-pill hover:bg-ink-100" aria-label="Закрыть меню">
+                <svg class="shrink-0" width="24" height="24" aria-hidden="true" focusable="false">
+    <use href="#i-x"></use>
+</svg>
+            </button>
+        </div>
+
+        <nav aria-label="Основные разделы" class="mt-2">
+            <ul class="divide-y divide-subtle border-b border-subtle">
+                                    <li>
+                        <a href="pets.html" class="flex items-center gap-4 py-4 font-display text-lg font-semibold tracking-display aria-[current=page]:text-tag-700">
+                            <svg class="shrink-0 text-ink-700" width="24" height="24" aria-hidden="true" focusable="false">
+    <use href="#i-paw"></use>
+</svg>
+Питомцы
+                        </a>
+                    </li>
+                                    <li>
+                        <a href="campaigns.html" class="flex items-center gap-4 py-4 font-display text-lg font-semibold tracking-display aria-[current=page]:text-tag-700">
+                            <svg class="shrink-0 text-ink-700" width="24" height="24" aria-hidden="true" focusable="false">
+    <use href="#i-tenge"></use>
+</svg>
+Сборы
+                        </a>
+                    </li>
+                                    <li>
+                        <a href="walks.html" class="flex items-center gap-4 py-4 font-display text-lg font-semibold tracking-display aria-[current=page]:text-tag-700">
+                            <svg class="shrink-0 text-ink-700" width="24" height="24" aria-hidden="true" focusable="false">
+    <use href="#i-leash"></use>
+</svg>
+Выгул
+                        </a>
+                    </li>
+                                    <li>
+                        <a href="shelters.html" class="flex items-center gap-4 py-4 font-display text-lg font-semibold tracking-display aria-[current=page]:text-tag-700">
+                            <svg class="shrink-0 text-ink-700" width="24" height="24" aria-hidden="true" focusable="false">
+    <use href="#i-home"></use>
+</svg>
+Приюты
+                        </a>
+                    </li>
+                                    <li>
+                        <a href="help.html" class="flex items-center gap-4 py-4 font-display text-lg font-semibold tracking-display aria-[current=page]:text-tag-700">
+                            <svg class="shrink-0 text-ink-700" width="24" height="24" aria-hidden="true" focusable="false">
+    <use href="#i-heart"></use>
+</svg>
+Как помочь
+                        </a>
+                    </li>
+                            </ul>
+        </nav>
+
+                    <div class="mt-6 flex items-center gap-3">
+                <span class="inline-grid shrink-0 place-items-center overflow-hidden rounded-pill font-bold size-14 text-md bg-tag-200 text-tag-700" aria-hidden="true">
+            ДА
+    </span>
+                <div class="min-w-0">
+                    <p class="truncate font-semibold">Динара Абенова</p>
+                    <p class="text-sm text-muted">Представитель приюта</p>
+                </div>
+            </div>
+        
+        <div class="mt-auto grid gap-3 pt-8">
+            <a href="campaigns.html" class="relative inline-flex items-center justify-center rounded-sm font-semibold leading-tight whitespace-nowrap select-none transition-colors duration-120 disabled:cursor-not-allowed aria-disabled:pointer-events-none bg-tag-500 text-ink-900 hover:bg-tag-600 active:bg-tag-press disabled:bg-ink-200 disabled:text-ink-400 aria-disabled:bg-ink-200 aria-disabled:text-ink-400 h-control-lg px-6 text-md gap-2 w-full">
+        <span class="inline-flex items-center justify-center gap-[inherit]">
+                    <svg class="shrink-0" width="20" height="20" aria-hidden="true" focusable="false">
+    <use href="#i-heart"></use>
+</svg>
+                            Помочь
+                    </span>
+    </a>
+                            <a href="shelter.html" class="relative inline-flex items-center justify-center rounded-sm font-semibold leading-tight whitespace-nowrap select-none transition-colors duration-120 disabled:cursor-not-allowed aria-disabled:pointer-events-none border-control border-ink-900 bg-white text-ink-900 hover:bg-ink-50 active:bg-ink-100 disabled:border-ink-300 disabled:bg-white disabled:text-ink-400 aria-disabled:border-ink-300 aria-disabled:text-ink-400 h-control-lg px-6 text-md gap-2 w-full">
+        <span class="inline-flex items-center justify-center gap-[inherit]">
+                    <svg class="shrink-0" width="20" height="20" aria-hidden="true" focusable="false">
+    <use href="#i-user"></use>
+</svg>
+                            Личный кабинет
+                    </span>
+    </a>
+                <form method="POST" action="#" data-demo-action="logout">
+                                        <button type="submit" class="relative inline-flex items-center justify-center rounded-sm font-semibold leading-tight whitespace-nowrap select-none transition-colors duration-120 disabled:cursor-not-allowed aria-disabled:pointer-events-none bg-transparent text-ink-900 hover:bg-ink-100 active:bg-ink-200 disabled:bg-transparent disabled:text-ink-400 aria-disabled:text-ink-400 h-control-lg px-6 text-md gap-2 w-full">
+        <span class="inline-flex items-center justify-center gap-[inherit]">
+                    <svg class="shrink-0" width="20" height="20" aria-hidden="true" focusable="false">
+    <use href="#i-logout"></use>
+</svg>
+                            Выйти
+                    </span>
+    </button>
+                </form>
+                    </div>
+    </div>
+</dialog>
+            <div id="toasts" class="pointer-events-none fixed inset-x-0 top-0 z-50 flex flex-col items-end gap-3 p-4 sm:top-4 sm:right-4 sm:left-auto sm:w-[400px] sm:p-0" aria-live="polite">
+    </div>
+
+
+<template id="toast-template">
+    <div class="vm-toast pointer-events-auto flex w-full items-start gap-3 rounded-md border border-subtle bg-raised p-4 shadow-lg" data-toast="" data-autohide="6000" role="status">
+    <span class="grid size-9 shrink-0 place-items-center rounded-pill bg-success-bg text-success-fg">
+        <svg class="shrink-0" width="20" height="20" aria-hidden="true" focusable="false">
+    <use href="#i-check-circle"></use>
+</svg>
+    </span>
+    <div class="min-w-0 flex-1 pt-1">
+        <p class="leading-snug font-semibold" data-toast-title=""></p>
+                    <p class="mt-1 text-sm text-secondary"><span data-toast-text=""></span></p>
+            </div>
+    <button type="button" data-toast-close="" class="-m-1 grid size-9 shrink-0 place-items-center rounded-pill text-ink-700 hover:bg-ink-100" aria-label="Закрыть уведомление">
+        <svg class="shrink-0" width="16" height="16" aria-hidden="true" focusable="false">
+    <use href="#i-x"></use>
+</svg>
+    </button>
+</div>
+</template>
+    
+
+</body></html>

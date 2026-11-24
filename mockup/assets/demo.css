@@ -1,0 +1,169 @@
+/*
+ * VetMoment — стили, которых нет в основной сборке: плашка «Демо-версия» с переключателем ролей и подсказка
+ * на странице входа. Только токены темы (переменные из assets/app.css), без новых цветов.
+ * Копируется в mockup/assets/demo.css командой `php artisan mockup:export`.
+ */
+
+.demo-bar {
+    position: relative;
+    z-index: 45;
+    background: var(--color-ink-900);
+    color: var(--color-white);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.demo-bar__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 24px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+.demo-bar__note {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    color: var(--color-ink-200);
+}
+
+.demo-bar__note strong {
+    color: var(--color-white);
+    font-weight: 600;
+}
+
+.demo-bar__icon {
+    flex: none;
+    color: var(--color-sky-200);
+}
+
+.demo-bar__controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+}
+
+.demo-bar__label {
+    color: var(--color-ink-300);
+}
+
+/* Переключатель ролей — сегменты на тёмной «подложке», выбранная роль — белая таблетка. */
+.demo-roles {
+    display: inline-flex;
+    gap: 2px;
+    padding: 3px;
+    border-radius: var(--radius-pill);
+    background: var(--color-ink-800);
+}
+
+.demo-roles__item,
+.demo-bar__reset {
+    appearance: none;
+    min-height: 32px;
+    border: 0;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.demo-roles__item {
+    padding: 4px 12px;
+    border-radius: var(--radius-pill);
+    background: transparent;
+    color: var(--color-ink-200);
+    transition: background-color 120ms, color 120ms;
+}
+
+.demo-roles__item:hover {
+    color: var(--color-white);
+}
+
+.demo-roles__item[aria-pressed="true"] {
+    background: var(--color-white);
+    color: var(--color-ink-900);
+}
+
+.demo-bar__reset {
+    padding: 4px 4px;
+    background: transparent;
+    color: var(--color-white);
+    text-decoration: underline;
+    text-decoration-color: var(--color-ink-400);
+    text-underline-offset: 4px;
+}
+
+.demo-bar__reset:hover {
+    text-decoration-color: var(--color-white);
+}
+
+/* Фокус на тёмном фоне: светлое кольцо вместо sky-600 (контраст ≥ 3:1). */
+.demo-roles__item:focus-visible,
+.demo-bar__reset:focus-visible {
+    outline: 3px solid var(--color-sky-200);
+    outline-offset: 2px;
+}
+
+@media (max-width: 639px) {
+    .demo-bar {
+        font-size: 13px;
+    }
+
+    .demo-bar__label {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+    }
+
+    .demo-bar__controls {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .demo-roles__item {
+        padding: 4px 9px;
+    }
+
+    .demo-bar__more {
+        display: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .demo-roles__item {
+        transition: none;
+    }
+}
+
+/* Подсказка демо-логинов над формой входа. */
+.demo-hint {
+    margin: 0 0 20px;
+    padding: 12px 16px;
+    border: 1px solid var(--color-info-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-info-bg);
+    color: var(--color-info-fg);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.demo-hint code {
+    padding: 1px 6px;
+    border-radius: var(--radius-xs);
+    background: var(--color-white);
+    color: var(--color-ink-900);
+    font-family: inherit;
+    font-weight: 600;
+}
+
+[hidden] {
+    display: none !important;
+}
