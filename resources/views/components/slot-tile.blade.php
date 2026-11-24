@@ -21,6 +21,6 @@
    ]) }}>
     <span class="block font-semibold tabular-nums">{{ LocalTime::timeRange($model->starts_at, $model->ends_at) }}</span>
     <span @class(['mt-1 flex items-center gap-1.5 text-xs font-semibold', 'text-meadow-700' => $state === WalkSlotState::Available, 'text-tag-700' => $state === WalkSlotState::FewLeft])>
-        <x-icon :name="$bookable ? ($state === WalkSlotState::FewLeft ? 'alert-triangle' : 'leash') : 'x'" size="sm" />{{ $note }}
+        <x-icon :name="$bookable ? ($state === WalkSlotState::FewLeft ? 'alert-triangle' : 'leash') : 'x'" size="sm" /><span data-slot-note="{{ $model->id }}">{{ $note }}</span>
     </span>
 </a>

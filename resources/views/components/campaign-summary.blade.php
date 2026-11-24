@@ -8,14 +8,14 @@
     $daysLeft = $campaign->daysLeft();
     $reached = $campaign->isGoalReached();
 @endphp
-<div {{ $attributes->class('grid gap-4') }}>
+<div {{ $attributes->class('grid gap-4') }} data-campaign="{{ $campaign->id }}">
     <p class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-        <span class="font-display text-2xl leading-none md:text-3xl font-semibold tracking-display tabular-nums">{{ Money::format($campaign->raised_amount) }}</span>
+        <span class="font-display text-2xl leading-none md:text-3xl font-semibold tracking-display tabular-nums" data-campaign-raised>{{ Money::format($campaign->raised_amount) }}</span>
         <span class="text-sm text-secondary">из {{ Money::format($campaign->goal_amount) }}</span>
     </p>
     <x-progress :raised="$campaign->raised_amount" :goal="$campaign->goal_amount" compact />
     <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-sm text-secondary">
-        <span class="flex items-center gap-1.5"><x-icon name="users" size="sm" />{{ Plural::format((int) $campaign->donations_count, ['человек', 'человека', 'человек']) }}</span>
+        <span class="flex items-center gap-1.5"><x-icon name="users" size="sm" /><span data-campaign-donors>{{ Plural::format((int) $campaign->donations_count, ['человек', 'человека', 'человек']) }}</span></span>
         @if ($reached)
             <span class="flex items-center gap-1.5 font-semibold text-success-fg"><x-icon name="check-circle" size="sm" />Цель достигнута{{ $campaign->raised_amount > $campaign->goal_amount ? ', '.intdiv($campaign->raised_amount * 100, max(1, $campaign->goal_amount)).'%' : '' }}</span>
         @elseif ($daysLeft !== null)

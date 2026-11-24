@@ -64,7 +64,7 @@
         'text-meadow-700' => $state === WalkSlotState::Available,
         'text-warning-fg' => $state === WalkSlotState::FewLeft,
     ])>
-        <x-icon :name="$noteIcon" size="sm" class="size-3.5" />{{ $note }}
+        <x-icon :name="$noteIcon" size="sm" class="size-3.5" /><span data-slot-note="{{ $value }}">{{ $note }}</span>
     </span>
     @if ($bookable)
         <span class="hidden items-center gap-1.5 text-xs font-semibold text-tag-500 group-has-checked:flex">

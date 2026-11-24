@@ -143,7 +143,7 @@
                         <div class="grid gap-3 border-t border-subtle pt-4">
                             @if ($campaign)
                                 <p class="text-sm text-secondary">Сбор «{{ $campaign->title }}»</p>
-                                <x-progress :raised="$campaign->raised_amount" :goal="$campaign->goal_amount" />
+                                <x-progress :raised="$campaign->raised_amount" :goal="$campaign->goal_amount" data-campaign="{{ $campaign->id }}" />
                                 <div><x-button variant="donate" size="sm" icon="heart" :href="$helpUrl">Помочь сбору</x-button></div>
                             @else
                                 <p class="text-sm text-secondary">

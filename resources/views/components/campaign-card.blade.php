@@ -22,7 +22,7 @@
     $art = $campaign->illustration();
     $badge = $done ? CampaignStatus::Completed : ($campaign->status === CampaignStatus::Active && ! $accepting ? CampaignStatus::Closed : $campaign->status);
 @endphp
-<article {{ $attributes->class('flex flex-col rounded-lg border border-subtle bg-raised p-2') }}>
+<article {{ $attributes->class('flex flex-col rounded-lg border border-subtle bg-raised p-2') }} data-campaign="{{ $campaign->id }}">
     <div @class(['relative h-40 overflow-hidden rounded-md md:h-44', $image ? 'bg-ink-100' : $art['bg']])>
         @if ($image)
             <img src="{{ $image }}" alt="" loading="lazy" decoding="async" class="size-full object-cover">
@@ -43,14 +43,14 @@
         <div class="min-h-4 grow"></div>
 
         <p class="flex flex-wrap items-baseline gap-x-2">
-            <span class="type-number">{{ Money::format($campaign->raised_amount) }}</span>
+            <span class="type-number" data-campaign-raised>{{ Money::format($campaign->raised_amount) }}</span>
             <span class="text-sm text-secondary">из {{ Money::format($campaign->goal_amount) }}</span>
-            <span class="ml-auto text-sm font-semibold tabular-nums">{{ $percent }}%</span>
+            <span class="ml-auto text-sm font-semibold tabular-nums" data-campaign-percent>{{ $percent }}%</span>
         </p>
         <x-progress :raised="$campaign->raised_amount" :goal="$campaign->goal_amount" compact class="mt-3" />
 
         <div class="mt-3 flex items-center justify-between gap-3 text-sm text-secondary">
-            <span class="flex items-center gap-1.5"><x-icon name="users" size="sm" />{{ Plural::format((int) $campaign->donations_count, ['человек', 'человека', 'человек']) }}</span>
+            <span class="flex items-center gap-1.5"><x-icon name="users" size="sm" /><span data-campaign-donors>{{ Plural::format((int) $campaign->donations_count, ['человек', 'человека', 'человек']) }}</span></span>
             @if ($done)
                 <span class="flex items-center gap-1.5 font-semibold text-success-fg"><x-icon name="check-circle" size="sm" />Собрано</span>
             @elseif ($daysLeft !== null)

@@ -8,7 +8,7 @@
             </x-slot:action>
         </x-empty-state>
     @else
-        <ul class="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-3 xl:gap-6">
+        <ul class="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-3 xl:gap-6" data-favorites-list>
             @foreach ($pets as $pet)
                 <li class="flex min-w-0">
                     <x-pet-card :pet="$pet" class="w-full" responsive :favorite-url="route('pets.favorite', $pet)" favorited heading-level="2" />

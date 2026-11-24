@@ -13,3 +13,7 @@ CHANGELOG.md export-ignore
 *.sh text eol=lf
 *.bat text eol=crlf
 *.cmd text eol=crlf
+
+# Демо-макет: инструкция открывается Блокнотом на Windows
+/mockup/README.txt text eol=crlf
+/resources/mockup/README.txt text eol=crlf

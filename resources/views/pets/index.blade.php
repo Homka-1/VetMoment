@@ -118,14 +118,14 @@
                 <h2 class="sr-only" aria-live="polite">Найдено: {{ Plural::format($pets->total(), ['питомец', 'питомца', 'питомцев']) }}</h2>
 
                 @if ($pets->isEmpty())
-                    <x-empty-state class="mt-6" title="Никого не нашли" illustration="cat-smoke" tone="sky">
+                    <x-empty-state class="mt-6" title="Никого не нашли" data-catalog-empty illustration="cat-smoke" tone="sky">
                         Попробуйте убрать часть фильтров — например, город или возраст. Питомцы появляются в каталоге каждую неделю.
                         <x-slot:action>
                             <x-button variant="secondary" :href="route('pets.index')">Сбросить фильтры</x-button>
                         </x-slot:action>
                     </x-empty-state>
                 @else
-                    <ul class="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 lg:gap-8">
+                    <ul class="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 lg:gap-8" data-pet-catalog>
                         @foreach ($pets as $pet)
                             <li class="flex min-w-0">
                                 <x-pet-card :pet="$pet" class="w-full" heading-level="3" responsive
@@ -134,7 +134,7 @@
                         @endforeach
                     </ul>
 
-                    <x-pagination :paginator="$pets" class="mt-10" />
+                    <x-pagination :paginator="$pets" class="mt-10" data-catalog-pagination />
                 @endif
             </div>
         </div>
